@@ -1,0 +1,38 @@
+{
+    "name": "rsp-data-visualizing",
+    "version": "0.0.0",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/moiman100/rsp_data_visualizing"
+    },
+    "dependencies": {
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "@types/node": "^13.7.1",
+        "eslint": "^6.8.0",
+        "eslint-plugin-import": "^2.20.1",
+        "nodemon": "^2.0.2",
+        "ts-node": "^8.6.2",
+        "typescript": "^3.7.5"
+    },
+    "nodemonConfig": {
+        "ignore": [
+            "**/*.test.ts",
+            "**/*.spec.ts",
+            ".git",
+            "node_modules"
+        ],
+        "watch": [
+            "./src"
+        ],
+        "exec": "npm start",
+        "ext": "ts"
+    },
+    "scripts": {
+        "start": "node -r ts-node/register ./src/app.ts",
+        "start:watch": "nodemon",
+        "build": "tsc"
+    }
+}
