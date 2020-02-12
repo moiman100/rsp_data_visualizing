@@ -7,8 +7,11 @@ services:
       - "27017:27017"
   app:
     container_name: app
+    command: npm run start:dev
     restart: always
     build: .
+    volumes: 
+      - ./:/usr/src/app
     ports:
       - "3000:3000"
     links:
