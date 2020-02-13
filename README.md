@@ -10,7 +10,7 @@ First time setup:
 3. `npm install`
 4. `docker-compose up --build`
 
-Nodemon will automatically restart the server when changes are made to ts files in src folder.
+Nodemon will automatically restart the server when changes are made files.
 
 To stop the container use `ctrl + C`.
 
