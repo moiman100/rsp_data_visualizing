@@ -18,6 +18,6 @@ To add node modules:
 
 1. stop the container
 2. `npm install <module>`
-3. Rebuild the container `docker-compose up --build`
+3. Rebuild the container `docker-compose up --build -V`
 
 To just start the container: `docker-compose up`.
