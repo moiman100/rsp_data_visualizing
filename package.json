@@ -25,10 +25,10 @@
             "node_modules"
         ],
         "watch": [
-            "./src"
+            "./"
         ],
         "exec": "npm start",
-        "ext": "ts"
+        "ext": "*"
     },
     "scripts": {
         "start": "node -r ts-node/register ./src/app.ts",
