@@ -2,9 +2,18 @@ version: "3.7"
 services:
   mongo:
     container_name: mongo
-    image: mongo
+    hostname: mongo
+    image: mongo:latest
     ports:
       - "27017:27017"
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    hostname: mongo-express
+    depends_on: 
+      - mongo
+    ports: 
+      - "3300:8081"
   app:
     container_name: app
     command: npm run start:dev
@@ -15,7 +24,5 @@ services:
       - /usr/src/app/node_modules
     ports:
       - "3000:3000"
-    links:
-      - mongo
     depends_on:
       - mongo
