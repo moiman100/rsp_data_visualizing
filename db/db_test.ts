@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var Ad = require("./models/ad");
 var AdVersion = require("./models/adversion");
 var UserSession = require("./models/session");
-var Event = require("./models/event");
+var AdEvent = require("./models/event");
 
 // Creates and saves an advertisement and ad version
 async function createAd(Ad, AdVersion, name, version, language) {
@@ -11,7 +11,9 @@ async function createAd(Ad, AdVersion, name, version, language) {
     });
 
     ad.save(function (err) {
-        if (err) return handleError(err);
+        if (err) {
+            console.error(err);
+        }
 
         var adVersion = new AdVersion({
             ad: ad._id,
@@ -20,15 +22,19 @@ async function createAd(Ad, AdVersion, name, version, language) {
         });
 
         adVersion.save(function (err) {
-            if (err) return handleError(err);
+            if (err) {
+                console.error(err);
+            }
         });
     });
 }
 
-// Creates and saves a session and an event
+// Creates and saves a session and an AdEvent
 async function createSession(Ad, AdVersion, name, UserSession, Event) {
     AdVersion.findOne({ version_name: name }, "_id", function (err, version) {
-        if (err) return handleError(err);
+        if (err) {
+            console.error(err);
+        }
         var id = version._id;
 
         var userSession = new UserSession({
@@ -42,23 +48,27 @@ async function createSession(Ad, AdVersion, name, UserSession, Event) {
         });
 
         userSession.save(function (err) {
-            if (err) return handleError(err);
+            if (err) {
+                console.error(err);
+            }
 
-            var event = new Event({
+            var event = new AdEvent({
                 session: userSession._id,
                 event_name: "Download",
                 orientation: "Horizontal"
             });
 
             event.save(function (err) {
-                if (err) return handleError(err);
+                if (err) {
+                    console.error(err);
+                }
             });
         });
     });
 }
 
 // Prints contents of database to console
-async function logDb(Ad, AdVersion, UserSession, Event) {
+async function logDb(Ad, AdVersion, UserSession, AdEvent) {
     await Ad.find(function (err, ads) {
         if (err) return console.error(err);
         console.log(ads);
@@ -74,7 +84,7 @@ async function logDb(Ad, AdVersion, UserSession, Event) {
         console.log(sessions);
     });
 
-    Event.find(function (err, events) {
+    AdEvent.find(function (err, events) {
         if (err) return console.error(err);
         console.log(events);
     });
@@ -83,7 +93,7 @@ async function logDb(Ad, AdVersion, UserSession, Event) {
 // Connects to database
 const test = async function () {
     // Connects to specified database
-    mongoose.connect("mongodb://localhost:27017/test", { useNewUrlParser: true });
+    mongoose.connect("mongodb://mongo:27017/test", { useNewUrlParser: true });
 
     var db = mongoose.connection;
 
@@ -98,10 +108,10 @@ const test = async function () {
         //createAd(Ad, AdVersion, "Test Advertisement 1", "Test Version", "English");
 
         // Creates ands saves a session and an event. Advertisement and version need to be in database
-        //createSession(Ad, AdVersion, "Test Version", UserSession, Event);
+        //createSession(Ad, AdVersion, "Test Version", UserSession, AdEvent);
 
         // Prints contents of database to console
-        logDb(Ad, AdVersion, UserSession, Event);
+        logDb(Ad, AdVersion, UserSession, AdEvent);
     });
 };
 

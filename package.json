@@ -9,7 +9,6 @@
     "dependencies": {
         "ejs": "^3.0.1",
         "express": "^4.17.1",
-        "mongo-express": "^0.54.0",
         "mongoose": "^5.9.1"
     },
     "devDependencies": {
