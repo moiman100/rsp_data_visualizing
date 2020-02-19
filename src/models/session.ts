@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require("mongoose");
-var AdVersion = require("./adversion");
+var AdVersion = require("./adversion.ts");
 
 var Schema = mongoose.Schema;
 

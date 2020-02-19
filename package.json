@@ -7,12 +7,13 @@
         "url": "https://github.com/moiman100/rsp_data_visualizing"
     },
     "dependencies": {
+        "async": "^3.1.1",
         "ejs": "^3.0.1",
         "express": "^4.17.1",
         "mongoose": "^5.9.1"
     },
     "devDependencies": {
-        "@types/node": "^13.7.2",
+        "@types/node": "^13.7.4",
         "eslint": "^6.8.0",
         "eslint-plugin-import": "^2.20.1",
         "nodemon": "^2.0.2",
