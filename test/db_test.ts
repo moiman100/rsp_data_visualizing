@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
-var Ad = require("./models/ad");
-var AdVersion = require("./models/adversion");
-var UserSession = require("./models/session");
-var AdEvent = require("./models/event");
+var Ad = require("../src/models/ad");
+var AdVersion = require("../src/models/adversion");
+var UserSession = require("../src/models/session");
+var AdEvent = require("../src/models/event");
 
 // Creates and saves an advertisement and ad version
 async function createAd(Ad, AdVersion, name, version, language) {

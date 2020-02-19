@@ -8,7 +8,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 // serve public directory
-app.use(express.static('public'));
+app.use(express.static('src/public'));
 
 app.get("/", (req, res) => {
     res.render("index", {title: "Home"});
