@@ -33,7 +33,7 @@ function randomAction() {
 let index = 1;
 
 // For loop fills array with dummy events
-for (let i = 1; i < 100; i++) {
+for (let i = 1; i < 10; i++) {
     events.push(new eventObject(randomAction(), "Horizontal", i));
     index++;
 }
