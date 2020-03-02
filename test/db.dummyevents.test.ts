@@ -21,27 +21,12 @@ function sessionObject(session_name, os, os_version, device, location) {
     this.location = location;
 }
 
-// Array of Events
-const events = [];
-
+// Functions to randomize event and sessions parameters
 function randomAction() {
     const actions = ["Click", "Clack", "Clock", "Pop"]; // Array of possible actions
     const randomAction = actions[Math.floor(Math.random() * actions.length)];
     return randomAction;
 }
-
-let index = 1;
-
-// For loop fills array with dummy events
-for (let i = 1; i < 10; i++) {
-    events.push(new eventObject(randomAction(), "Horizontal", i));
-    index++;
-}
-
-events.push(new eventObject("Download", "Horizontal", index++)); // Ends session with Download action
-
-// Array of Sessions
-const sessions = [];
 
 function randomUser() {
     const users = ["Joonas", "Mikko", "Atte", "Lauri", "Teemu", "Erkki"]; // Array of possible users
@@ -73,13 +58,40 @@ function randomLocation() {
     return randomLocation;
 }
 
-// For loop fills array with dummy sessions
-for (let i = 0; i < 5; i++) {
-    sessions.push(new sessionObject(randomUser(), randomOs(), randomOsversion(), randomDevice(), randomLocation()));
+// Generates dummy sessions into an array, alter for loop length to alter the number of sessions created 
+function generateSessions() {
+    // Array of Sessions
+    const sessions = [];
+
+    // For loop fills array with dummy sessions
+    for (let i = 0; i < 5; i++) {
+        sessions.push(new sessionObject(randomUser(), randomOs(), randomOsversion(), randomDevice(), randomLocation()));
+    }
+
+    return sessions;
+}
+
+// Generates dummy events into an array, alter for loop length to change the number of events per session
+function generateEvents() {
+    // Array of Events
+    const events = [];
+
+    let index = 1;
+
+    // For loop fills array with dummy events
+    for (let i = 1; i < 10; i++) {
+        events.push(new eventObject(randomAction(), "Horizontal", i));
+        index++;
+    }
+
+    // Ends session with Download action
+    events.push(new eventObject("Download", "Horizontal", index++));
+
+    return events;
 }
 
 // Creates and saves a session and events from the events array
-function createSession(adName, versionName, sessions, events) {
+function createSession(adName, versionName) {
     Ad.findOne({ name: adName }, "_id", function (err, ad) {
         if (err) {
             console.error(err);
@@ -88,6 +100,8 @@ function createSession(adName, versionName, sessions, events) {
             if (err) {
                 console.error(err);
             }
+
+            const sessions = generateSessions();
 
             async.each(sessions, function (session_object, next) {
                 var userSession = new UserSession({
@@ -102,6 +116,9 @@ function createSession(adName, versionName, sessions, events) {
 
                 userSession.save()
                     .then(function () {
+
+                        const events = generateEvents();
+
                         async.each(events, function (event_object, next) {
                             var event = new AdEvent({
                                 session: userSession._id,
@@ -143,8 +160,8 @@ var run = async function () {
     db.on("error", console.error.bind(console, "connection error:"));
     db.once("open", async function () {
 
-        // Creates and saves a session and events from the events array. Advertisement and version need to be in database
-        createSession("Test Advertisement 1", "Test Version", sessions, events);
+        // Creates and saves sessions and events from the sessions & events arrays. Advertisement and version need to be in database
+        createSession("Test Advertisement 1", "Test Version");
 
     });
 }
