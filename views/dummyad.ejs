@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/dummy.style.css" />
+    <script src="/javascripts/dummy.js"></script>
+    <title>Insert Advertisement</title>
+</head>
+
+<body>
+    <section class="insert">
+        <h3>Insert Data</h3>
+        <h4>Use this to insert Advertisement if not already in database</h4>
+        <h5>Default values are name: Test Advertisement, version: V87, language: English</h5>
+        <form action="/insert/ad" method="post">
+            <div class="input">
+                <label for="name">Advertisement Name:</label>
+                <input type="text" id="name" name="name">
+            </div>
+            <div class="input">
+                <label for="version">Advertisement Version:</label>
+                <input type="text" id="version" name="version">
+            </div>
+            <div class="input">
+                <label for="language">Advertisement Language:</label>
+                <input type="text" id="language" name="language">
+            </div>
+            <button type="submit">INSERT</button>
+        </form>
+    </section>
+</body>
+
+</html>
