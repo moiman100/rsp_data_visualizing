@@ -1,8 +1,4 @@
 var mongoose = require("mongoose");
-var Ad = require("../src/models/ad.ts");
-var AdVersion = require("../src/models/adversion.ts");
-var UserSession = require("../src/models/session.ts");
-var AdEvent = require("../src/models/event.ts");
 
 var run = async function () {
     // Connects to specified database
