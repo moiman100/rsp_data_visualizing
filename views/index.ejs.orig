@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<<<<<<< HEAD
+
+<head>
+	<title><%= title %></title>
+	<link type="text/css" rel="stylesheet" href="/stylesheets/materialize.min.css" media="screen,projection" />
+</head>
+
+=======
+
+<head>
+	<title><%= title %></title>
+	<link rel="stylesheet" href="/stylesheets/style.css">
+	<link type="text/css" rel="stylesheet" href="/stylesheets/materialize.min.css" media="screen,projection" />
+	<script type="text/javascript" src="/javascripts/materialize.min.js"></script>
+</head>
+
+>>>>>>> 4daa57a... Funnel and buttons
+<body>
+	<nav>
+		<div class="nav-wrapper">
+			<a href="#" class="brand-logo right">Logo</a>
+			<ul id="nav-mobile" class="left hide-on-med-and-down">
+				<li><a href="/">Home</a></li>
+<<<<<<< HEAD
+				<li><a href="/dummyad">Insert advertisement</a></li>
+				<li><a href="/dummy">Playable Ad</a></li>
+=======
+>>>>>>> 4daa57a... Funnel and buttons
+			</ul>
+		</div>
+	</nav>
+	<div class="container center">
+		<h1><%= title %></h1>
+		<p>Welcome to <%= title %></p>
+<<<<<<< HEAD
+		<div class="row section">
+			<div class="col s6">
+				<img src="/images/template_graph.png">
+			</div>
+			<div class="col s6">
+				<img src="/images/template_graph.png">
+			</div>
+		</div>
+=======
+
+		<div id="like_button"></div>
+		<div id="funnel_graph"></div>
+>>>>>>> 4daa57a... Funnel and buttons
+	</div>
+	<script type="text/javascript" src="/javascripts/materialize.min.js"></script>
+</body>
+
+<<<<<<< HEAD
+=======
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+	<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="/javascripts/funnel.js"></script>
+</body>
+
+>>>>>>> 4daa57a... Funnel and buttons
+</html>
