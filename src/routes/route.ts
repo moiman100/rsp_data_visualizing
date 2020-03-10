@@ -1,9 +1,91 @@
-var mongoose = require("mongoose");
-var Ad = require("../src/models/ad.ts");
-var AdVersion = require("../src/models/adversion.ts");
-var UserSession = require("../src/models/session.ts");
-var AdEvent = require("../src/models/event.ts");
+var express = require("express");
+var router = express.Router();
+var mongoose = require('mongoose');
+mongoose.connect("mongodb://mongo:27017/test", { useNewUrlParser: true });
+var Ad = require("../models/ad.ts");
+var AdVersion = require("../models/adversion.ts");
+var UserSession = require("../models/session.ts");
+var AdEvent = require("../models/event.ts");
 var async = require("async");
+
+/* GET home page. */
+router.get("/", (req, res) => {
+    res.render("index", { title: "Home" });
+});
+
+// Inserts advertisements and ad versions into database
+router.post('/insert/ad', function (req, res, next) {
+    var ad = new Ad({
+        name: req.body.name
+    });
+
+    ad.save(function (err) {
+        if (err) {
+            console.error(err);
+        }
+
+        var adVersion = new AdVersion({
+            ad: ad._id,
+            version_name: req.body.version,
+            language: req.body.language
+        });
+
+        adVersion.save().then(function () {
+            res.redirect('/dummyad');
+        })
+            .catch(function (err) {
+                console.error(err);
+            });
+    })
+});
+
+// Inserts user sessions into database
+router.post('/insert/session', function (req, res, next) {
+    Ad.findOne({ name: req.body.advertisement }, "_id", function (err, ad) {
+        if (err) {
+            console.error(err);
+        }
+        AdVersion.findOne({ ad: ad._id, version_name: req.body.ad_version }, "_id", function (err, version) {
+            if (err) {
+                console.error(err);
+            }
+
+            var userSession = new UserSession({
+                version: version._id,
+                _id: new mongoose.Types.ObjectId(),
+                name: req.body.name,
+                os: req.body.os,
+                os_version: req.body.os_version,
+                device: req.body.device,
+                location: req.body.location
+            });
+
+            userSession.save()
+                .then(function () {
+                    res.send(userSession._id);
+                    res.redirect('/');
+                }).catch(function (err) {
+                    console.error(err);
+                });
+        });
+    });
+});
+
+// Inserts events into database
+router.post('/insert/event', function (req, res, next) {
+    var event = new AdEvent({
+        session: req.body.session_id,
+        event_name: req.body.event_name,
+        orientation: req.body.orientation,
+        event_number: req.body.event_number
+    });
+
+    event.save(function (err) {
+        res.redirect('/');
+    });
+});
+
+// GENERATING DUMMY EVENTS. SAME AS db.dummyevetns.test.ts
 
 // Javascript object for Events
 function eventObject(event_name, orientation, event_number) {
@@ -91,17 +173,17 @@ function generateEvents(event_count) {
 }
 
 // Creates and saves a session and events from the events array
-function createSession(adName, versionName, session_count, event_count) {
-    Ad.findOne({ name: adName }, "_id", function (err, ad) {
+router.post('/insert/dummyevents', function (req, res, next) {
+    Ad.findOne({ name: req.body.name }, "_id", function (err, ad) {
         if (err) {
             console.error(err);
         }
-        AdVersion.findOne({ ad: ad._id, version_name: versionName }, "_id", function (err, version) {
+        AdVersion.findOne({ ad: ad._id, version_name: req.body.version }, "_id", function (err, version) {
             if (err) {
                 console.error(err);
             }
 
-            const sessions = generateSessions(session_count);
+            const sessions = generateSessions(req.body.session_count);
 
             async.each(sessions, function (session_object, next) {
                 var userSession = new UserSession({
@@ -116,8 +198,7 @@ function createSession(adName, versionName, session_count, event_count) {
 
                 userSession.save()
                     .then(function () {
-
-                        const events = generateEvents(event_count);
+                        const events = generateEvents(req.body.event_count);
 
                         async.each(events, function (event_object, next) {
                             var event = new AdEvent({
@@ -144,26 +225,11 @@ function createSession(adName, versionName, session_count, event_count) {
 
 
             }, function done() {
-                mongoose.disconnect();
+                res.redirect('/dummyad');
             });
 
         });
     });
-}
+});
 
-var run = async function () {
-    // Connects to specified database
-    mongoose.connect("mongodb://mongo:27017/test", { useNewUrlParser: true });
-
-    var db = mongoose.connection;
-
-    db.on("error", console.error.bind(console, "connection error:"));
-    db.once("open", async function () {
-
-        // Creates and saves sessions and events, parameters determine amount of sessions and events generated. Advertisement and version need to be in database
-        createSession("Test Advertisement 1", "Test Version", 20, 10);
-
-    });
-}
-
-run();
+module.exports = router;
