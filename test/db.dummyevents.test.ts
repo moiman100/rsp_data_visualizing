@@ -59,12 +59,12 @@ function randomLocation() {
 }
 
 // Generates dummy sessions into an array, alter for loop length to alter the number of sessions created 
-function generateSessions() {
+function generateSessions(session_count) {
     // Array of Sessions
     const sessions = [];
 
     // For loop fills array with dummy sessions
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < session_count; i++) {
         sessions.push(new sessionObject(randomUser(), randomOs(), randomOsversion(), randomDevice(), randomLocation()));
     }
 
@@ -72,14 +72,14 @@ function generateSessions() {
 }
 
 // Generates dummy events into an array, alter for loop length to change the number of events per session
-function generateEvents() {
+function generateEvents(event_count) {
     // Array of Events
     const events = [];
 
     let index = 1;
 
     // For loop fills array with dummy events
-    for (let i = 1; i < 10; i++) {
+    for (let i = 1; i < event_count; i++) {
         events.push(new eventObject(randomAction(), "Horizontal", i));
         index++;
     }
@@ -91,7 +91,7 @@ function generateEvents() {
 }
 
 // Creates and saves a session and events from the events array
-function createSession(adName, versionName) {
+function createSession(adName, versionName, session_count, event_count) {
     Ad.findOne({ name: adName }, "_id", function (err, ad) {
         if (err) {
             console.error(err);
@@ -101,7 +101,7 @@ function createSession(adName, versionName) {
                 console.error(err);
             }
 
-            const sessions = generateSessions();
+            const sessions = generateSessions(session_count);
 
             async.each(sessions, function (session_object, next) {
                 var userSession = new UserSession({
@@ -117,7 +117,7 @@ function createSession(adName, versionName) {
                 userSession.save()
                     .then(function () {
 
-                        const events = generateEvents();
+                        const events = generateEvents(event_count);
 
                         async.each(events, function (event_object, next) {
                             var event = new AdEvent({
@@ -160,8 +160,8 @@ var run = async function () {
     db.on("error", console.error.bind(console, "connection error:"));
     db.once("open", async function () {
 
-        // Creates and saves sessions and events from the sessions & events arrays. Advertisement and version need to be in database
-        createSession("Test Advertisement 1", "Test Version");
+        // Creates and saves sessions and events, parameters determine amount of sessions and events generated. Advertisement and version need to be in database
+        createSession("Test Advertisement 1", "Test Version", 20, 10);
 
     });
 }
