@@ -1,7 +1,6 @@
 var mongoose = require("mongoose");
 var Ad = require("../src/models/ad.ts");
 var AdVersion = require("../src/models/adversion.ts");
-
 // Creates and saves an advertisement and ad version
 function createAd(name, version, language) {
     var ad = new Ad({
