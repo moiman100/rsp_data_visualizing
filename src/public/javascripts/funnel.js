@@ -38,7 +38,7 @@ class FunnelGraph extends React.Component {
 
   getAds() {
     // some API call to get a list of ads
-    let ad_list = ["ad1", "ad2"];
+    let ad_list = ["ad1", "ad2", "ad3"];
     this.setState({ available_ads: ad_list })
   }
 
@@ -50,8 +50,19 @@ class FunnelGraph extends React.Component {
 
   getEvents() {
     // some API call to get a list of events
-    let event_list = ["test", "case"];
+    let event_list = ["test", "case", "move", "press", "click"];
     this.setState({ available_events: event_list })
+  }
+
+  // demo function
+  fibonacci() {
+    let fibonacci_list = [0, 1]
+    while (fibonacci_list.length < this.state.event_flow.length) {
+      let index = fibonacci_list.length
+      fibonacci_list.push(fibonacci_list[index - 2] + fibonacci_list[index - 1])
+    }
+    fibonacci_list = fibonacci_list.reverse()
+    return fibonacci_list.slice(0, this.state.event_flow.length)
   }
 
   getData() {
@@ -62,7 +73,7 @@ class FunnelGraph extends React.Component {
       fill: 'tozeroy',
       type: 'scatter'
     };
-    data_object.y = [5, 2, 1, 0.5]; // from API
+    data_object.y = this.fibonacci(); // from API
     let data_object_list = [data_object]
     this.setState({ graph_data: data_object_list })
   }
