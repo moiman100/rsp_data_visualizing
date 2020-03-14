@@ -1,7 +1,7 @@
 var express = require("express");
 const path = require("path");
 var bodyParser = require('body-parser');
-var routes = require('/usr/src/app/src/routes/route.ts');
+var routes = require('/usr/src/app/src/routes/route.js');
 const app = express();
 
 app.use(bodyParser.json());

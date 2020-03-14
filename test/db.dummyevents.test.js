@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
-var Ad = require("../src/models/ad.ts");
-var AdVersion = require("../src/models/adversion.ts");
-var UserSession = require("../src/models/session.ts");
-var AdEvent = require("../src/models/event.ts");
+var Ad = require("../src/models/ad.js");
+var AdVersion = require("../src/models/adversion.js");
+var UserSession = require("../src/models/session.js");
+var AdEvent = require("../src/models/event.js");
 var async = require("async");
 
 // Javascript object for Events

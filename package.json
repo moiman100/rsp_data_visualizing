@@ -7,26 +7,21 @@
         "url": "https://github.com/moiman100/rsp_data_visualizing"
     },
     "dependencies": {
-        "async": "^3.1.1",
+        "async": "^3.2.0",
         "ejs": "^3.0.1",
         "express": "^4.17.1",
         "jquery": "^3.4.1",
-        "mongoose": "^5.9.1"
+        "mongoose": "^5.9.4"
     },
     "devDependencies": {
-        "@types/node": "^13.7.4",
-        "@types/react": "^16.9.23",
-        "@types/react-dom": "^16.9.5",
         "eslint": "^6.8.0",
         "eslint-plugin-import": "^2.20.1",
-        "nodemon": "^2.0.2",
-        "ts-node": "^8.6.2",
-        "typescript": "^3.7.5"
+        "nodemon": "^2.0.2"
     },
     "nodemonConfig": {
         "ignore": [
-            "**/*.test.ts",
-            "**/*.spec.ts",
+            "**/*.test.js",
+            "**/*.spec.js",
             ".git",
             "node_modules"
         ],
@@ -37,8 +32,7 @@
         "ext": "*"
     },
     "scripts": {
-        "start": "node -r ts-node/register ./src/app.ts",
-        "start:dev": "nodemon",
-        "build": "tsc"
+        "start": "node ./src/app.js",
+        "start:dev": "nodemon"
     }
 }
