@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require("mongoose");
-var Ad = require("./ad.ts");
+var Ad = require("./ad.js");
 
 var Schema = mongoose.Schema;
 
