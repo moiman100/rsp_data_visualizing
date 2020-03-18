@@ -1,7 +1,5 @@
 'use strict';
 
-const e = React.createElement;
-
 class FunnelGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -116,4 +114,4 @@ class FunnelGraph extends React.Component {
   }
 }
 const domContainer = document.querySelector('#selectors');
-ReactDOM.render(e(FunnelGraph), domContainer);
+ReactDOM.render(<FunnelGraph />, domContainer);
