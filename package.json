@@ -7,15 +7,11 @@
         "url": "https://github.com/moiman100/rsp_data_visualizing"
     },
     "dependencies": {
-        "@material-ui/core": "^4.9.5",
-        "@material-ui/icons": "^4.9.1",
         "async": "^3.2.0",
         "ejs": "^3.0.1",
         "express": "^4.17.1",
         "jquery": "^3.4.1",
-        "mongoose": "^5.9.5",
-        "react": "^16.13.0",
-        "react-dom": "^16.13.0"
+        "mongoose": "^5.9.5"
     },
     "devDependencies": {
         "eslint": "^6.8.0",
