@@ -10,11 +10,13 @@ const {
   Button,
   Card,
   Box,
+  Icon,
+  colors,
 } = MaterialUI;
 
 const { useState, useEffect } = React;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -25,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // Refactored FunnelGraph
-function FunnelGraphf(props) {
+function FunnelGraph(props) {
   const [graph_data, setGraph_data] = useState([]);
   const [available_ads, setAvailable_ads] = useState([]);
   const [available_ad_versions, setAvailable_ad_versions] = useState([]);
@@ -37,11 +39,15 @@ function FunnelGraphf(props) {
   const classes = useStyles();
 
   function handleChange(index) {
-    setEvent_flow(event_flow.splice(index, 1, event.target.value));
+    let event_flow_copy = [...event_flow];
+    event_flow_copy.splice(index, 1, event.target.value);
+    setEvent_flow(event_flow_copy);
   }
 
   function handleRemove(index) {
-    setEvent_flow(event_flow.splice(index, 1));
+    let event_flow_copy = [...event_flow];
+    event_flow_copy.splice(index, 1);
+    setEvent_flow(event_flow_copy);
   }
 
   function handleAdd() {
@@ -50,21 +56,39 @@ function FunnelGraphf(props) {
 
   function getAds() {
     // some API call to get a list of ads
-    let ad_list = ["ad1", "ad2", "ad3"];
-    setAvailable_ads(ad_list);
+    let ad_list;
+    axios.get("/api/ad").then(function (response) {
+      ad_list = response.data.data;
+      setAvailable_ads(ad_list);
+    });
   }
 
   function getAdVersions() {
+    let ad_id = available_ads[event.target.selectedIndex - 1]._id;
     // some API call to get a list of ad versions
-    console.log("hello");
-    let version_list = ["1.0", "0.5"];
-    setAvailable_ad_versions(version_list);
+    let version_list;
+    axios
+      .get("/api/version", {
+        params: {
+          ad: ad_id,
+        },
+      })
+      .then(function (response) {
+        version_list = response.data.data;
+        setAvailable_ad_versions(version_list);
+      });
   }
 
   function getEvents() {
+    let ad_version_id =
+      available_ad_versions[event.target.selectedIndex - 1]._id;
     // some API call to get a list of events
-    let event_list = ["test", "case", "move", "press", "click"];
-    setAvailable_events(event_list);
+    let event_list;
+    axios.get("/api/event", {}).then(function (response) {
+      console.log(response.data);
+      event_list = ["test", "click", "clack"];
+      setAvailable_events(event_list);
+    });
   }
 
   // demo function
@@ -84,9 +108,9 @@ function FunnelGraphf(props) {
     // some API call to get data for the graph
     // call should send ad, ad_version and event_flow to server
     let data_object = {
+      X: event_flow,
       y: [],
-      fill: "tozeroy",
-      type: "scatter",
+      type: "bar",
     };
     data_object.y = fibonacci(); // from API
     let data_object_list = [data_object];
@@ -94,7 +118,12 @@ function FunnelGraphf(props) {
   }
 
   useEffect(() => {
-    Plotly.react("funnel_graph", graph_data);
+    Plotly.react(
+      "funnel_graph",
+      graph_data,
+      {},
+      { displayModeBar: false, doubleClickDelay: 500 }
+    );
   }, [graph_data]);
 
   useEffect(() => {
@@ -106,14 +135,24 @@ function FunnelGraphf(props) {
     <Container maxWidth="sm">
       <FormControl className={classes.formControl}>
         <InputLabel>Ad</InputLabel>
-        <NativeSelect defaultValue="" onChange={getAdVersions}>
-          <OptionList inputList={available_ads} />
+        <NativeSelect defaultValue="" onChange={getAdVersions.bind(this)}>
+          <option aria-label="None" value="" disabled />
+          {available_ads.map((object, index) => (
+            <option key={index} value={object.name}>
+              {object.name}
+            </option>
+          ))}
         </NativeSelect>
       </FormControl>
       <FormControl className={classes.formControl}>
         <InputLabel>Version</InputLabel>
-        <NativeSelect defaultValue="" onChange={getEvents}>
-          <OptionList inputList={available_ad_versions} />
+        <NativeSelect defaultValue="" onChange={getEvents.bind(this)}>
+          <option aria-label="None" value="" disabled />
+          {available_ad_versions.map((object, index) => (
+            <option key={index} value={object.version_name}>
+              {object.version_name}
+            </option>
+          ))}
         </NativeSelect>
       </FormControl>
       <Box>
@@ -141,7 +180,7 @@ function FunnelGraphf(props) {
 function OptionList(props) {
   return (
     <React.Fragment>
-      <option aria-label="None" value="" />
+      <option aria-label="None" value="" disabled />
       {props.inputList.map((name, index) => (
         <option key={index} value={name}>
           {name}
@@ -152,4 +191,4 @@ function OptionList(props) {
 }
 
 const domContainer = document.querySelector("#selectors");
-ReactDOM.render(<FunnelGraphf />, domContainer);
+ReactDOM.render(<FunnelGraph />, domContainer);
