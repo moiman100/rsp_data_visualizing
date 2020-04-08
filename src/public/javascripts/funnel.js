@@ -5,6 +5,9 @@ const {
   MenuItem,
   InputLabel,
   FormControl,
+  FormGroup,
+  FormLabel,
+  FormControlLabel,
   makeStyles,
   Container,
   Button,
@@ -15,6 +18,13 @@ const {
   IconButton,
   Tooltip,
   colors,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  InputLabelProps,
+  Checkbox,
 } = MaterialUI;
 
 const { useState, useEffect } = React;
@@ -38,8 +48,17 @@ function FunnelGraph(props) {
   const [ad, setAd] = useState("");
   const [ad_version, setAd_version] = useState("");
   const [event_flow, setEvent_flow] = useState([]);
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [open, setOpen] = useState(false);
+  const [checkState, setCheckState] = useState({android: true, apple: true, horizontal: true, vertical: true});
 
   const classes = useStyles();
+  const {android, apple, horizontal, vertical} = checkState;
+
+  function handleCheckChange(event) {
+    setCheckState({...checkState, [event.target.name]: event.target.checked});
+  }
 
   function handleChange(index) {
     let event_flow_copy = [...event_flow];
@@ -55,6 +74,24 @@ function FunnelGraph(props) {
 
   function handleAdd() {
     setEvent_flow([...event_flow, ""]);
+  }
+
+  // Filter handlers
+
+  function handleStartDateChange(date) {
+    setSelectedStartDate(date.target.value.toString());
+  }
+
+  function handleEndDateChange(date) {
+    setSelectedEndDate(date.target.value.toString());
+  }
+
+  function handleClickOpen() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
   }
 
   function getAds() {
@@ -136,30 +173,104 @@ function FunnelGraph(props) {
   return (
     // Could be divided into smaller components
     <Container maxWidth="sm">
-      <FormControl className={classes.formControl}>
-        <InputLabel>
-          <b>AD Name</b>
-        </InputLabel>
-        <NativeSelect defaultValue="" onChange={getAdVersions.bind(this)}>
-          <option aria-label="None" value="" disabled />
-          {available_ads.map((object, index) => (
-            <option key={index} value={object.name}>
-              {object.name}
-            </option>
-          ))}
-        </NativeSelect>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel>Version</InputLabel>
-        <NativeSelect defaultValue="" onChange={getEvents.bind(this)}>
-          <option aria-label="None" value="" disabled />
-          {available_ad_versions.map((object, index) => (
-            <option key={index} value={object.version_name}>
-              {object.version_name}
-            </option>
-          ))}
-        </NativeSelect>
-      </FormControl>
+      <p>From {selectedStartDate}</p>
+      <p>To {selectedEndDate}</p>
+      <Grid container>
+        <Grid item xs={6}>
+          <FormControl className={classes.formControl}>
+            <InputLabel>
+              <b>AD Name</b>
+            </InputLabel>
+            <NativeSelect defaultValue="" onChange={getAdVersions.bind(this)}>
+              <option aria-label="None" value="" disabled />
+              {available_ads.map((object, index) => (
+                <option key={index} value={object.name}>
+                  {object.name}
+                </option>
+              ))}
+            </NativeSelect>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <InputLabel>Version</InputLabel>
+            <NativeSelect defaultValue="" onChange={getEvents.bind(this)}>
+              <option aria-label="None" value="" disabled />
+              {available_ad_versions.map((object, index) => (
+                <option key={index} value={object.version_name}>
+                  {object.version_name}
+                </option>
+              ))}
+            </NativeSelect>
+          </FormControl>
+        </Grid>
+        <Grid item xs={6}>
+          <Box display="flex" justifyContent="flex-end">
+            <FormControl className={classes.formControl}>
+              <Button onClick={handleClickOpen}>Filters</Button>
+              <Dialog disableBackdropClick open={open} onClose={handleClose}>
+                <DialogTitle>Select filters</DialogTitle>
+                <DialogContent>
+                  <form>
+                    <TextField onChange={handleStartDateChange} className={classes.textField}
+                      id="date-start"
+                      label="Start"
+                      type="date"
+                      value={selectedStartDate}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                    />
+                    <TextField onChange={handleEndDateChange} className={classes.textField}
+                      id="date-end"
+                      label="End"
+                      type="date"
+                      value={selectedEndDate}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                    />
+                  </form>
+                  <Box mt={1}>
+                    <FormLabel component="legend">OS</FormLabel>
+                  </Box>
+                  <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox checked={android} onChange={handleCheckChange} name="android" />}
+                        label="Android"
+                      />
+                      <FormControlLabel
+                        control={<Checkbox checked={apple} onChange={handleCheckChange} name="apple" />}
+                        label="Apple"
+                      />
+                  </FormGroup>
+                  <Box mt={1}>
+                    <FormLabel component="legend">Orientation</FormLabel>
+                  </Box>
+                  <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox checked={horizontal} onChange={handleCheckChange} name="horizontal" />}
+                        label="Horizontal"
+                      />
+                      <FormControlLabel
+                        control={<Checkbox checked={vertical} onChange={handleCheckChange} name="vertical" />}
+                        label="Vertical"
+                      />
+                  </FormGroup>
+                  
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleClose}>
+                    Ok
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </FormControl>
+          </Box>
+        </Grid>
+      </Grid>
+      
 
       <Grid container spacing={1}>
         <Grid container item xs={12} spacing={3}>
