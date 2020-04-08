@@ -170,7 +170,7 @@ function FunnelGraph(props) {
               title="Add event"
             >
               <IconButton onClick={handleAdd}>
-                <Icon style={{ color: colors.green[500], fontSize: 30 }}>
+                <Icon style={{ color: colors.green[500], fontSize: 35 }}>
                   add_circle
                 </Icon>
               </IconButton>
@@ -184,7 +184,7 @@ function FunnelGraph(props) {
               title="Update graph"
             >
               <IconButton onClick={getData}>
-                <Icon style={{ color: colors.blue[500], fontSize: 30 }}>
+                <Icon style={{ color: colors.blue[500], fontSize: 35 }}>
                   sync
                 </Icon>
               </IconButton>
