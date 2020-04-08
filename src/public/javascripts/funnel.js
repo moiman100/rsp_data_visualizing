@@ -11,6 +11,9 @@ const {
   Card,
   Box,
   Icon,
+  Grid,
+  IconButton,
+  Tooltip,
   colors,
 } = MaterialUI;
 
@@ -134,7 +137,9 @@ function FunnelGraph(props) {
     // Could be divided into smaller components
     <Container maxWidth="sm">
       <FormControl className={classes.formControl}>
-        <InputLabel>Ad</InputLabel>
+        <InputLabel>
+          <b>AD Name</b>
+        </InputLabel>
         <NativeSelect defaultValue="" onChange={getAdVersions.bind(this)}>
           <option aria-label="None" value="" disabled />
           {available_ads.map((object, index) => (
@@ -155,10 +160,38 @@ function FunnelGraph(props) {
           ))}
         </NativeSelect>
       </FormControl>
-      <Box>
-        <Button onClick={handleAdd}>Add new event</Button>
-        <Button onClick={getData}>Update funnel</Button>
-      </Box>
+
+      <Grid container spacing={1}>
+        <Grid container item xs={12} spacing={3}>
+          <Grid item xs={11}>
+            <Tooltip
+              disableFocusListener
+              disableTouchListener
+              title="Add event"
+            >
+              <IconButton onClick={handleAdd}>
+                <Icon style={{ color: colors.green[500], fontSize: 30 }}>
+                  add_circle
+                </Icon>
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1}>
+            <Tooltip
+              disableFocusListener
+              disableTouchListener
+              title="Update graph"
+            >
+              <IconButton onClick={getData}>
+                <Icon style={{ color: colors.blue[500], fontSize: 30 }}>
+                  sync
+                </Icon>
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </Grid>
+      </Grid>
       <Card id="funnel_graph"></Card>
       {event_flow.map((selected_event, index) => (
         <FormControl key={index} className={classes.formControl}>
