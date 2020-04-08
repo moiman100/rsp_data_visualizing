@@ -19,6 +19,8 @@ router.post('/insert/ad', function (req, res, next) {
         name: req.body.name
     });
 
+    var types = JSON.parse(req.body.types);
+
     ad.save(function (err) {
         if (err) {
             console.error(err);
@@ -27,7 +29,8 @@ router.post('/insert/ad', function (req, res, next) {
         var adVersion = new AdVersion({
             ad: ad._id,
             version_name: req.body.version,
-            language: req.body.language
+            language: req.body.language,
+            event_types: types
         });
 
         adVersion.save().then(function () {

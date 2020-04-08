@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var Ad = require("../src/models/ad.js");
 var AdVersion = require("../src/models/adversion.js");
+var actions = ["Click", "Clack", "Clock", "Pop", "Download"];
 // Creates and saves an advertisement and ad version
 function createAd(name, version, language) {
     var ad = new Ad({
@@ -15,7 +16,8 @@ function createAd(name, version, language) {
         var adVersion = new AdVersion({
             ad: ad._id,
             version_name: version,
-            language: language
+            language: language,
+            event_types: actions
         });
 
         adVersion.save().then(function () {

@@ -10,7 +10,9 @@ var AdVersionsSchema = new Schema({
     version_name: String,
     release_date: { type: Date, default: Date.now },
     language: String,
-    event_types: [String]
+    event_types: [{
+        type: String
+    }]
 });
 
 module.exports = mongoose.model("AdVersion", AdVersionsSchema);
