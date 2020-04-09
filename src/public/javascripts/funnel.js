@@ -29,6 +29,8 @@ const {
 
 const { useState, useEffect } = React;
 
+var ad_id = 0;
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -51,10 +53,10 @@ function FunnelGraph(props) {
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [open, setOpen] = useState(false);
-  const [checkState, setCheckState] = useState({ android: true, apple: true, horizontal: true, vertical: true });
+  const [checkState, setCheckState] = useState({ Android: true, iOS: true, Horizontal: true, Vertical: true });
 
   const classes = useStyles();
-  const { android, apple, horizontal, vertical } = checkState;
+  const { Android, iOS, Horizontal, Vertical } = checkState;
 
   function handleCheckChange(event) {
     setCheckState({ ...checkState, [event.target.name]: event.target.checked });
@@ -119,10 +121,12 @@ function FunnelGraph(props) {
       });
   }
 
+
   function getEvents() {
     let ad_version_id =
       available_ad_versions[event.target.selectedIndex - 1]._id;
     // some API call to get a list of events
+    ad_id = ad_version_id;
     let event_list;
     axios
       .get("/api/version", {
@@ -150,16 +154,37 @@ function FunnelGraph(props) {
   }
 
   function getData() {
-    // some API call to get data for the graph
-    // call should send ad, ad_version and event_flow to server
     let data_object = {
       X: event_flow,
       y: [],
       type: "bar",
     };
-    data_object.y = fibonacci(); // from API
-    let data_object_list = [data_object];
-    setGraph_data(data_object_list);
+
+    let filterArray = [];
+    for (let [key, value] of Object.entries(checkState)) {
+      if (value) {
+        filterArray.push({ "os": key });
+
+      }
+    }
+
+    // some API call to get data for the graph
+    // call should send ad, ad_version and event_flow to server
+    axios
+      .post("/api/funnel", {
+        order: event_flow,
+
+        params: {
+          version: ad_id,
+          $or: filterArray
+
+        },
+      })
+      .then(function (response) {
+        data_object.y = response.data.data // from API
+        let data_object_list = [data_object];
+        setGraph_data(data_object_list);
+      });
   }
 
   useEffect(() => {
@@ -239,12 +264,12 @@ function FunnelGraph(props) {
                   </Box>
                   <FormGroup>
                     <FormControlLabel
-                      control={<Checkbox checked={android} onChange={handleCheckChange} name="android" />}
+                      control={<Checkbox checked={Android} onChange={handleCheckChange} name="Android" />}
                       label="Android"
                     />
                     <FormControlLabel
-                      control={<Checkbox checked={apple} onChange={handleCheckChange} name="apple" />}
-                      label="Apple"
+                      control={<Checkbox checked={iOS} onChange={handleCheckChange} name="iOS" />}
+                      label="iOS"
                     />
                   </FormGroup>
                   <Box mt={1}>
@@ -252,11 +277,11 @@ function FunnelGraph(props) {
                   </Box>
                   <FormGroup>
                     <FormControlLabel
-                      control={<Checkbox checked={horizontal} onChange={handleCheckChange} name="horizontal" />}
+                      control={<Checkbox checked={Horizontal} onChange={handleCheckChange} name="Horizontal" />}
                       label="Horizontal"
                     />
                     <FormControlLabel
-                      control={<Checkbox checked={vertical} onChange={handleCheckChange} name="vertical" />}
+                      control={<Checkbox checked={Vertical} onChange={handleCheckChange} name="Vertical" />}
                       label="Vertical"
                     />
                   </FormGroup>

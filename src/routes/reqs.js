@@ -20,6 +20,6 @@ router.route("/session").get(getSession).post(addSession);
 router.route("/version").get(getVersion).post(addVersion);
 router.route("/completed").get(getCompleted);
 router.route("/totals").get(getTotals);
-router.route("/funnel").get(funs);
+router.route("/funnel").post(funs);
 
 module.exports = router;

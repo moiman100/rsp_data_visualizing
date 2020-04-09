@@ -227,10 +227,11 @@ exports.getTotals = async (req, res, next) => {
 };
 
 // @desc    Gets funnel expects the order of events and the filter parameters
-// @route   GET /api/funnel
+// @route   POST /api/funnel
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
+  console.log(req.body);
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
@@ -257,7 +258,7 @@ exports.funs = async (req, res, next) => {
     var t1 = new Date().getTime();
     console.log("Funneling took " + (t1 - t0) + " milliseconds.");
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: result,
     });
@@ -273,7 +274,7 @@ function countings(funnel, events, index) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
         JSON.stringify(funnel[index]) ===
-          JSON.stringify(events[i].events[n].event_name) &&
+        JSON.stringify(events[i].events[n].event_name) &&
         events[i].events[n].event_number === index + 1
       ) {
         /*console.log("fub:" + funnel[index] + index)
