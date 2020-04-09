@@ -51,13 +51,13 @@ function FunnelGraph(props) {
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [open, setOpen] = useState(false);
-  const [checkState, setCheckState] = useState({android: true, apple: true, horizontal: true, vertical: true});
+  const [checkState, setCheckState] = useState({ android: true, apple: true, horizontal: true, vertical: true });
 
   const classes = useStyles();
-  const {android, apple, horizontal, vertical} = checkState;
+  const { android, apple, horizontal, vertical } = checkState;
 
   function handleCheckChange(event) {
-    setCheckState({...checkState, [event.target.name]: event.target.checked});
+    setCheckState({ ...checkState, [event.target.name]: event.target.checked });
   }
 
   function handleChange(index) {
@@ -124,11 +124,16 @@ function FunnelGraph(props) {
       available_ad_versions[event.target.selectedIndex - 1]._id;
     // some API call to get a list of events
     let event_list;
-    axios.get("/api/event", {}).then(function (response) {
-      console.log(response.data);
-      event_list = ["test", "click", "clack"];
-      setAvailable_events(event_list);
-    });
+    axios
+      .get("/api/version", {
+        params: {
+          _id: ad_version_id,
+        },
+      })
+      .then(function (response) {
+        event_list = response.data.data[0].event_types;
+        setAvailable_events(event_list);
+      });
   }
 
   // demo function
@@ -233,29 +238,29 @@ function FunnelGraph(props) {
                     <FormLabel component="legend">OS</FormLabel>
                   </Box>
                   <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={android} onChange={handleCheckChange} name="android" />}
-                        label="Android"
-                      />
-                      <FormControlLabel
-                        control={<Checkbox checked={apple} onChange={handleCheckChange} name="apple" />}
-                        label="Apple"
-                      />
+                    <FormControlLabel
+                      control={<Checkbox checked={android} onChange={handleCheckChange} name="android" />}
+                      label="Android"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={apple} onChange={handleCheckChange} name="apple" />}
+                      label="Apple"
+                    />
                   </FormGroup>
                   <Box mt={1}>
                     <FormLabel component="legend">Orientation</FormLabel>
                   </Box>
                   <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={horizontal} onChange={handleCheckChange} name="horizontal" />}
-                        label="Horizontal"
-                      />
-                      <FormControlLabel
-                        control={<Checkbox checked={vertical} onChange={handleCheckChange} name="vertical" />}
-                        label="Vertical"
-                      />
+                    <FormControlLabel
+                      control={<Checkbox checked={horizontal} onChange={handleCheckChange} name="horizontal" />}
+                      label="Horizontal"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={vertical} onChange={handleCheckChange} name="vertical" />}
+                      label="Vertical"
+                    />
                   </FormGroup>
-                  
+
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose}>
@@ -270,7 +275,7 @@ function FunnelGraph(props) {
           </Box>
         </Grid>
       </Grid>
-      
+
 
       <Grid container spacing={1}>
         <Grid container item xs={12} spacing={3}>
@@ -307,6 +312,7 @@ function FunnelGraph(props) {
       {event_flow.map((selected_event, index) => (
         <FormControl key={index} className={classes.formControl}>
           <InputLabel>Event</InputLabel>
+
           <NativeSelect
             value={event_flow[index]}
             onChange={handleChange.bind(this, index)}
