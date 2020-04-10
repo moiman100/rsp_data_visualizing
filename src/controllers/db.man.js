@@ -2,6 +2,7 @@ const Ad = require("../models/ad.js");
 const AdVersion = require("../models/adversion.js");
 const UserSession = require("../models/session.js");
 const AdEvent = require("../models/event.js");
+var mongoose = require('mongoose');
 
 // @desc  maybe a bit bubblegummy solution, calculates totals for events by list of valid event numbers
 
@@ -231,34 +232,29 @@ exports.getTotals = async (req, res, next) => {
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
-  console.log(req.body);
+
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
     var temp = [];
-    for (const sess of sessions) {
-      // could be handled better
-      const event = await AdEvent.find({
-        event_name: { $in: req.body.order },
-        event_number: { $gt: 0, $lt: req.body.order.length + 1 },
-        session: sess.id,
-      });
-      if (event.length != 0) {
-        events.push({ session: sess.id, events: event });
-      }
+    var sess_id = []
+    for(const sess of sessions) {
+      sess_id.push(mongoose.Types.ObjectId(sess.id));
     }
-
-    const jsonevents = JSON.parse(JSON.stringify(events));
-    temp = jsonevents;
+    var match = { "$match" : { "session" : { "$in" : sess_id } }};
+    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}} };
+    const event = await AdEvent.aggregate([match, group]);
+    temp = event;
     var t0 = new Date().getTime();
-    for (var i = 0, l = funnel.length; i < l; i++) {
+
+   for (var i = 0, l = funnel.length; i < l; i++) {
       temp = countings(funnel, temp, i);
       result.push(temp.length);
     }
     var t1 = new Date().getTime();
     console.log("Funneling took " + (t1 - t0) + " milliseconds.");
 
-    return res.status(200).json({
+    return res.status(400).json({
       success: true,
       data: result,
     });
@@ -274,14 +270,13 @@ function countings(funnel, events, index) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
         JSON.stringify(funnel[index]) ===
-        JSON.stringify(events[i].events[n].event_name) &&
-        events[i].events[n].event_number === index + 1
+          JSON.stringify(events[i].events[n]) &&
+        events[i].numbers[n] === index + 1
       ) {
-        /*console.log("fub:" + funnel[index] + index)
-            console.log("ebv:" + events[i].events[n].event_name + events[i].events[n].event_number)*/
         result.push(events[i]);
       }
     }
   }
   return result;
 }
+
