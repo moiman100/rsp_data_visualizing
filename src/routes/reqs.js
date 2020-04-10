@@ -12,6 +12,7 @@ const {
   getCompleted,
   getTotals,
   funs,
+  sankey,
 } = require("../controllers/db.man.js");
 
 router.route("/ad").get(getAds).post(addAd);
@@ -21,5 +22,6 @@ router.route("/version").get(getVersion).post(addVersion);
 router.route("/completed").get(getCompleted);
 router.route("/totals").get(getTotals);
 router.route("/funnel").post(funs);
+router.route("/sankey").post(sankey);
 
 module.exports = router;

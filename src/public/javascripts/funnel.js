@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 // Refactored FunnelGraph
 function FunnelGraph(props) {
   const [graph_data, setGraph_data] = useState([]);
+  const [sankey_data, setSankey_data] = useState({});
   const [available_ads, setAvailable_ads] = useState([]);
   const [available_ad_versions, setAvailable_ad_versions] = useState([]);
   const [available_events, setAvailable_events] = useState([]);
@@ -139,19 +140,6 @@ function FunnelGraph(props) {
       });
   }
 
-  // demo function
-  function fibonacci() {
-    let fibonacci_list = [0, 1];
-    while (fibonacci_list.length < event_flow.length) {
-      let index = fibonacci_list.length;
-      fibonacci_list.push(
-        fibonacci_list[index - 2] + fibonacci_list[index - 1]
-      );
-    }
-    fibonacci_list = fibonacci_list.reverse();
-    return fibonacci_list.slice(0, event_flow.length);
-  }
-
   function getData() {
     let data_object = {
       X: event_flow,
@@ -166,6 +154,27 @@ function FunnelGraph(props) {
 
       }
     }
+
+    var data1 = {
+      type: "sankey",
+      orientation: "h",
+    };
+
+    axios
+      .post("/api/sankey", {
+        params: {
+          version: ad_id,
+
+        },
+      })
+      .then(function (response) {
+        data1.node = response.data.data.node;
+        data1.link = response.data.data.link;
+
+        data1 = [data1];
+
+        setSankey_data(data1);
+      });
 
     const dateObject = {};
     if (selectedStartDate != "" && selectedEndDate != "") {
@@ -189,7 +198,6 @@ function FunnelGraph(props) {
             version: ad_id,
             start_date: dateObject,
             $or: filterArray
-
           },
         })
         .then(function (response) {
@@ -205,16 +213,19 @@ function FunnelGraph(props) {
           params: {
             version: ad_id,
             $or: filterArray
-
           },
         })
         .then(function (response) {
-          data_object.y = response.data.data // from API
+          data_object.y = response.data.data; // from API
           let data_object_list = [data_object];
           setGraph_data(data_object_list);
         });
     }
   }
+
+  useEffect(() => {
+    Plotly.react("sankey", sankey_data)
+  }, [sankey_data])
 
   useEffect(() => {
     Plotly.react(
@@ -231,7 +242,7 @@ function FunnelGraph(props) {
 
   return (
     // Could be divided into smaller components
-    <Container maxWidth="sm">
+    <Container maxWidth="false">
       <p>From {selectedStartDate}</p>
       <p>To {selectedEndDate}</p>
       <Grid container>
@@ -362,6 +373,7 @@ function FunnelGraph(props) {
         </Grid>
       </Grid>
       <Card id="funnel_graph"></Card>
+      <Card id="sankey"></Card>
       {event_flow.map((selected_event, index) => (
         <FormControl key={index} className={classes.formControl}>
           <InputLabel>Event</InputLabel>
