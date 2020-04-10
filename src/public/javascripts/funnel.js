@@ -63,6 +63,29 @@ function FunnelGraph(props) {
     setCheckState({ ...checkState, [event.target.name]: event.target.checked });
   }
 
+// Show filters that are used currently
+////////////////////////////////////////////////////////////////////////////  
+function showFilters(selectedEndDate,selectedStartDate,checkState) {
+  var dateFilters = "";
+  var otherFilers = "";
+  if (selectedStartDate && selectedEndDate) {
+    var startDate = selectedStartDate.toString().split("-");
+    var stopDate = selectedEndDate.toString().split("-");
+    dateFilters = startDate[2] + "/" + startDate[1] + "/" + startDate[0] + " - " + startDate[2] + "/" + startDate[1] + "/" + startDate[0];
+  }
+  for (var i in checkState) {
+    if (checkState[i] === true ) {
+      otherFilers = otherFilers.concat(i, ";");      
+    }
+  }
+  return {dateFilters, otherFilers};
+}
+console.log(checkState[1]);
+console.log(Object.keys(checkState).length);
+////////////////////////////////////////////////////////////////////////////
+const {dateFilters, otherFilers} = showFilters(selectedEndDate,selectedStartDate,checkState);
+
+
   function handleChange(index) {
     let event_flow_copy = [...event_flow];
     event_flow_copy.splice(index, 1, event.target.value);
@@ -243,8 +266,7 @@ function FunnelGraph(props) {
   return (
     // Could be divided into smaller components
     <Container maxWidth="false">
-      <p>From {selectedStartDate}</p>
-      <p>To {selectedEndDate}</p>
+      
       <Grid container>
         <Grid item xs={6}>
           <FormControl className={classes.formControl}>
@@ -340,6 +362,8 @@ function FunnelGraph(props) {
           </Box>
         </Grid>
       </Grid>
+      <p style={{marginBottom:"2px"}}>Filters: {dateFilters}</p>
+      <p style={{marginTop:"2px"}}>{otherFilers}</p>
 
       <Grid container spacing={1}>
         <Grid container item xs={12} spacing={3}>
