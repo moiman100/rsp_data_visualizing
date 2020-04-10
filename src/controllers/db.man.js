@@ -283,15 +283,6 @@ function countings(funnel, events, index) {
 times = async () => {
   var lookup = { "$lookup" : { from: "events", localField: "_id", foreignField: "session", as: "times"}};
   var unwind = {"$unwind": "$times"}
-  var addFields = {'$addFields': {'time': { '$map': {
-        input: '$time',
-        in: {
-          'start': '$$this.start_date',
-          'end': '$$this.stop_date'
-        }
-      }
-    }
-  }}
   var project = { "$project": {
     "version":1,
     "start_date" : 1,
