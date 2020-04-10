@@ -133,7 +133,6 @@ exports.addEvent = async (req, res, next) => {
 };
 // @desc    Get Sessions(s) if req.body is empty gets all, if not the based on the attributes
 // @route   GET /api/session
-
 exports.getSession = async (req, res, next) => {
   try {
     const session = await UserSession.find(req.body);
@@ -241,12 +240,13 @@ exports.funs = async (req, res, next) => {
     for(const sess of sessions) {
       sess_id.push(mongoose.Types.ObjectId(sess.id));
     }
+    
     var match = { "$match" : { "session" : { "$in" : sess_id } }};
-    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}} };
+    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
+
     const event = await AdEvent.aggregate([match, group]);
     temp = event;
     var t0 = new Date().getTime();
-
    for (var i = 0, l = funnel.length; i < l; i++) {
       temp = countings(funnel, temp, i);
       result.push(temp.length);
@@ -256,6 +256,7 @@ exports.funs = async (req, res, next) => {
       success: true,
       data: result,
     });
+
   } catch (err) {
     console.log(err);
   }
@@ -318,7 +319,6 @@ exports.sankey = async (req, res, next) => {
 
 function countings(funnel, events, index) {
   var result = [];
-
   for (var i = 0, l = events.length; i < l; i++) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
@@ -333,3 +333,29 @@ function countings(funnel, events, index) {
   return result;
 }
 
+times = async () => {
+  var lookup = { "$lookup" : { from: "events", localField: "_id", foreignField: "session", as: "times"}};
+  var unwind = {"$unwind": "$times"}
+  var addFields = {'$addFields': {'time': { '$map': {
+        input: '$time',
+        in: {
+          'start': '$$this.start_date',
+          'end': '$$this.stop_date'
+        }
+      }
+    }
+  }}
+  var project = { "$project": {
+    "version":1,
+    "start_date" : 1,
+    "stop_date" : 1,
+    "time" :"$times.time"
+
+  }}
+
+  var lookup2 = { "$lookup" : { from: "entities", localField: "times._id", foreignField: "_id", as: "times.times"}};
+  var group = { "$group" : { "_id" : "$_id", "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
+  var out = {"$out" : "session_times"}
+  const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group, out]);
+  console.log(event)
+};
