@@ -121,7 +121,6 @@ function FunnelGraph(props) {
       });
   }
 
-
   function getEvents() {
     let ad_version_id =
       available_ad_versions[event.target.selectedIndex - 1]._id;
@@ -168,23 +167,53 @@ function FunnelGraph(props) {
       }
     }
 
+    const dateObject = {};
+    if (selectedStartDate != "" && selectedEndDate != "") {
+      dateObject.$gte = selectedStartDate;
+      dateObject.$lte = selectedEndDate;
+    } else if (selectedStartDate != "") {
+      dateObject.$gte = selectedStartDate;
+    } else if (selectedEndDate != "") {
+      dateObject.$lte = selectedEndDate;
+    }
+
     // some API call to get data for the graph
     // call should send ad, ad_version and event_flow to server
-    axios
-      .post("/api/funnel", {
-        order: event_flow,
 
-        params: {
-          version: ad_id,
-          $or: filterArray
+    if (selectedStartDate != "" || selectedEndDate != "") {
+      axios
+        .post("/api/funnel", {
+          order: event_flow,
 
-        },
-      })
-      .then(function (response) {
-        data_object.y = response.data.data // from API
-        let data_object_list = [data_object];
-        setGraph_data(data_object_list);
-      });
+          params: {
+            version: ad_id,
+            start_date: dateObject,
+            $or: filterArray
+
+          },
+        })
+        .then(function (response) {
+          data_object.y = response.data.data // from API
+          let data_object_list = [data_object];
+          setGraph_data(data_object_list);
+        });
+    } else {
+      axios
+        .post("/api/funnel", {
+          order: event_flow,
+
+          params: {
+            version: ad_id,
+            $or: filterArray
+
+          },
+        })
+        .then(function (response) {
+          data_object.y = response.data.data // from API
+          let data_object_list = [data_object];
+          setGraph_data(data_object_list);
+        });
+    }
   }
 
   useEffect(() => {
@@ -300,7 +329,6 @@ function FunnelGraph(props) {
           </Box>
         </Grid>
       </Grid>
-
 
       <Grid container spacing={1}>
         <Grid container item xs={12} spacing={3}>
