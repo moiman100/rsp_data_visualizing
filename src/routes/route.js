@@ -2,10 +2,10 @@ var express = require("express");
 var router = express.Router();
 var mongoose = require('mongoose');
 mongoose.connect("mongodb://mongo:27017/test", { useNewUrlParser: true });
-var Ad = require("../models/ad.ts");
-var AdVersion = require("../models/adversion.ts");
-var UserSession = require("../models/session.ts");
-var AdEvent = require("../models/event.ts");
+var Ad = require("../models/ad.js");
+var AdVersion = require("../models/adversion.js");
+var UserSession = require("../models/session.js");
+var AdEvent = require("../models/event.js");
 var async = require("async");
 
 /* GET home page. */
@@ -19,6 +19,8 @@ router.post('/insert/ad', function (req, res, next) {
         name: req.body.name
     });
 
+    var types = JSON.parse(req.body.types);
+
     ad.save(function (err) {
         if (err) {
             console.error(err);
@@ -27,7 +29,8 @@ router.post('/insert/ad', function (req, res, next) {
         var adVersion = new AdVersion({
             ad: ad._id,
             version_name: req.body.version,
-            language: req.body.language
+            language: req.body.language,
+            event_types: types
         });
 
         adVersion.save().then(function () {

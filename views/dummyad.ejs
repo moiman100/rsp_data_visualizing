@@ -6,29 +6,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/stylesheets/dummy.style.css" />
     <title>Insert Advertisement</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#btn3").click(function () {
+                var typeList = ["Click", "Clack", "Clock", "Pop", "Download"];
+
+                var jsonStr = JSON.stringify(typeList);
+                var advertisement = {
+                    name: "Test Advertisement",
+                    version: "V87",
+                    language: "English",
+                    types: jsonStr
+
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/insert/ad",
+                    data: advertisement,
+                    success: function (result) {
+
+                    }
+                });
+            });
+
+            $("#btn2").click(function () {
+                var typeList = [];
+                $("ol li").each(function () {
+                    var $type = $(this).find("input");
+                    typeList.push($type.val());
+                });
+
+                var jsonStr = JSON.stringify(typeList);
+                var advertisement = {
+                    name: $("#ad-name").val(),
+                    version: $("#ad-version").val(),
+                    language: $("#ad-language").val(),
+                    types: jsonStr
+
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/insert/ad",
+                    data: advertisement,
+                    success: function (result) {
+
+                    }
+                });
+            });
+
+            $("#btn1").click(function () {
+                $("#type-list").append('<li><div class="input"><label for="version">Event type: </label><input type="text" id="type" name="type" value="Click"><br><br></div></li>');
+
+            });
+        });
+    </script>
 </head>
 
 <body>
     <h1>Insert Data</h3>
         <section class="insert-ad">
             <h2>Use this to insert Advertisement if not already in database</h4>
+                <button id="btn3">Insert default advertisement</button><br><br>
                 <h2>Use the default values for testing</h5>
-                    <form action="/insert/ad" method="post">
-                        <div class="input">
-                            <label for="name">Advertisement Name:</label>
-                            <input type="text" id="name" name="name" value="Test Advertisement"><br><br>
-                        </div>
-                        <div class="input">
-                            <label for="version">Advertisement Version:</label>
-                            <input type="text" id="version" name="version" value="V87"><br><br>
-                        </div>
-                        <div class="input">
-                            <label for="language">Advertisement Language:</label>
-                            <input type="text" id="language" name="language" value="English"><br><br>
-                        </div>
-                        <button type="submit">Insert</button>
-                    </form>
+                    <div class="input">
+                        <label for="name">Advertisement Name:</label>
+                        <input type="text" id="ad-name" name="name" value="Test Advertisement"><br><br>
+                    </div>
+                    <div class="input">
+                        <label for="version">Advertisement Version:</label>
+                        <input type="text" id="ad-version" name="version" value="V87"><br><br>
+                    </div>
+                    <div class="input">
+                        <label for="language">Advertisement Language:</label>
+                        <input type="text" id="ad-language" name="language" value="English"><br><br>
+                    </div>
+                    <ol id="type-list">
+                        <li>
+                            <div class="input">
+                                <label for="version">Event type:</label>
+                                <input type="text" id="event-types" name="types" value="Click"><br><br>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <button id="btn2">Insert</button>
+
+                    <button id="btn1">More types</button>
         </section>
+
         <section class="insert-events">
             <h2>Use this to insert user sessions and events</h4>
                 <h2>Use the default values for testing</h5>

@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require("mongoose");
-var UserSession = require("./session.ts");
+var UserSession = require("./session.js");
 
 var Schema = mongoose.Schema;
 
