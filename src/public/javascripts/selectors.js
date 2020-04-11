@@ -193,8 +193,12 @@ function Selectors(props) {
                     </FormControl>
                 </Box>
             </Grid>
-            <p style={{ marginBottom: "2px", marginLeft: "2%" }}>Filters: {dateFilters}</p>
-            <p style={{ marginTop: "2px" }}>{otherFilters}</p>
+            <Grid xs={12}>
+                <p style={{ marginBottom:"2px", marginLeft: "2%" }}><b>Filters:</b> {dateFilters}</p>
+            </Grid>
+            <Grid xs={12}>
+                <p style={{ marginTop:"2px", marginLeft: "2%" }}>{otherFilters}</p>
+            </Grid>   
         </Grid>
     );
 }
