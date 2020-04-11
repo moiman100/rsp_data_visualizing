@@ -90,7 +90,6 @@ function FunnelGraph(props) {
     labels.forEach((element, index) => {
       labels[index] = element + "(" + index + ")";
     });
-
     let data_object = {
       X: labels,
       y: [],
@@ -125,14 +124,38 @@ function FunnelGraph(props) {
       });
   }
 
+  // Funnel graph configurations
+//////////////////////////////////////////////////////////////////////////////
+  try { 
+    var funnelData = [{
+      x:graph_data[0]["X"],
+      y:graph_data[0]["y"],
+      type:"bar"
+    }]
+  } catch(err) {}
+
+  var funnelLayout = {
+    yaxis: {range: [0,1]},
+    xaxis: {range: [0,1]}
+  }
+  try {
+    let maxY = Math.max.apply(null, graph_data[0]["X"]); //Find highst value on the returned data
+    let countX = graph_data[0]["y"].length; // Count of events returned
+    funnelLayout = {
+      yaxis: {range: [0,maxY]},
+      xaxis: {range: [-0.5,countX]}
+    }
+  } catch(err) {}
+
   useEffect(() => {
     Plotly.react(
       "funnel_graph",
-      graph_data,
-      {},
+      funnelData,
+      funnelLayout,
       { displayModeBar: false, doubleClickDelay: 500 }
     );
-  }, [graph_data]);
+  }, [funnelData]);
+//////////////////////////////////////////////////////////////////////////////
 
   return (
     // Could be divided into smaller components
