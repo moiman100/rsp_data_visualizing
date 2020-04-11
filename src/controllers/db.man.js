@@ -228,7 +228,7 @@ exports.getTotals = async (req, res, next) => {
 
 // @desc    Gets funnel expects the order of events and the filter parameters
 // @route   POST /api/funnel
-exports.funsss = async (req, res, next) => {
+exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
 
@@ -244,11 +244,9 @@ exports.funsss = async (req, res, next) => {
     var match = { "$match" : { "session" : { "$in" : sess_id } }};
     var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
 
-  
-
     const event = await AdEvent.aggregate([match, group]);
     temp = event;
-    var t0 = new Date().getTime();
+
    for (var i = 0, l = funnel.length; i < l; i++) {
       temp = countings(funnel, temp, i);
       result.push(temp.length);
@@ -319,7 +317,7 @@ exports.sankey = async (req, res, next) => {
   }
 };
 
-exports.funs = async (req, res, next) => {
+exports.funs_aggregate = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
   var ever = 999; //for cheking if even occured
@@ -403,8 +401,8 @@ function countings(funnel, events, index) {
   for (var i = 0, l = events.length; i < l; i++) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
-        JSON.stringify(funnel[index]) ===
-          JSON.stringify(events[i].events[n]) &&
+        funnel[index] ===
+         events[i].events[n] &&
         events[i].numbers[n] === index + 1
       ) {
         result.push(events[i]);
