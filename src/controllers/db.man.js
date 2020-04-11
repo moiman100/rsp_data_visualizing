@@ -228,7 +228,7 @@ exports.getTotals = async (req, res, next) => {
 
 // @desc    Gets funnel expects the order of events and the filter parameters
 // @route   POST /api/funnel
-exports.funs = async (req, res, next) => {
+exports.funsss = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
 
@@ -243,6 +243,8 @@ exports.funs = async (req, res, next) => {
     
     var match = { "$match" : { "session" : { "$in" : sess_id } }};
     var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
+
+  
 
     const event = await AdEvent.aggregate([match, group]);
     temp = event;
@@ -264,6 +266,93 @@ exports.funs = async (req, res, next) => {
   }
 };
 
+exports.funs = async (req, res, next) => {
+  var events = [];
+  const funnel = req.body.order;
+  //var ever = new Date("2035-01-01")
+  var ever = 999;
+  try {
+    const sessions = await UserSession.find(req.body.params);
+    var result = [];
+    var temp = [];
+    var sess_id = []
+    for(const sess of sessions) {
+      sess_id.push(mongoose.Types.ObjectId(sess.id));
+    }
+    
+    var match = { "$match" : { "session" : { "$in" : sess_id } }};
+    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
+    var match2 = { "$match" : { "event_name" : { "$in" : funnel} } }
+    var projectActions = {"$project": {  "s" : "$session" }}
+
+    funnel.forEach( function(e) { 
+      projectActions["$project"][e] = { };
+      projectActions["$project"][e]["f"] = { "$cond" : [ { "$eq" : [ "$event_name", e ] }, "$event_number", ever ] };
+      projectActions["$project"][e]["t"] = { "$cond" : [ { "$eq" : [ "$event_name", e ] },   1, 0 ] };
+    });
+
+    var groupBySession = { "$group" : { "_id" : "$s" } };
+
+    funnel.forEach( function(e) { 
+      var first = e + "first";
+      var times = e + "times";
+      groupBySession["$group"][first] = { "$min" : "$" + e + ".f" };
+      groupBySession["$group"][times] = { "$sum" : "$" + e + ".t" };
+    });
+
+    var didA =  funnel[0];
+    var andClause = { "$and" : [  ] };
+    var didFirst =  { "$lt" : [ "$" + funnel[0] + "first", ever ] };
+    andClause["$and"].push(didFirst);
+
+    var projectBool = { "$project" : { "_id" : 0, "_id" : "$_id" } };
+    projectBool["$project"][didA] = didFirst;
+
+    for (var i=1; i < funnel.length; i++) { 
+      didA = didA + funnel[i];
+       andClause["$and"].push( { "$lt" : [ "$" + funnel[i] + "first", ever ] } );
+       andClause["$and"].push( { "$gt" : [ "$" + funnel[i] + "first", "$" + funnel[i-1] + "first" ] } );
+       projectBool["$project"][didA] =  { "$and" : [  ] };
+       andClause["$and"].forEach(function(a) { projectBool["$project"][didA]["$and"].push(a); });
+     } 
+
+     var groupAll = { "$group" : { "_id" : null } };
+     var didA = "";
+     for (var i=0; i < funnel.length; i++) { 
+       didA = didA + funnel[i]; 
+       groupAll["$group"][funnel[i]] = { "$sum" : { "$cond" : [ "$" + didA, 1, 0] } };
+     } 
+
+     var projectNeat = { "$project" : { "_id" : 0 } };
+     projectNeat["$project"][didA] = 1;
+     for (var i=1; i < funnel.length; i++) {
+       didA = didA + "then" + funnel[i]; 
+       var timeBtw = "timeBetween" + funnel[0] + "_" + funnel[i]; 
+       projectNeat["$project"][didA] = 1;
+       var avgTime = "avgMinsBetween" + funnel[0] + "_" + funnel[i];
+       projectNeat["$project"][avgTime] = {$cond: [ {$ne:["$"+didA,0]}, { "$divide" : [ { "$divide" : [ "$"+timeBtw, "$"+didA ] } , 6000 ] }, "N/A"]};
+     }  
+
+   
+  //  temp = event;
+    var t0 = new Date().getTime();
+   /*for (var i = 0, l = funnel.length; i < l; i++) {
+      temp = countings(funnel, temp, i);
+      result.push(temp.length);
+    }*/
+    const event = await AdEvent.aggregate([match,match2, projectActions, groupBySession, projectBool,groupAll]);
+    var t1 = new Date().getTime();
+    console.log("Funneling took " + (t1 - t0) + " milliseconds.");
+
+    return res.status(400).json({
+      success: true,
+      data: event,
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
 function countings(funnel, events, index) {
   var result = [];
   for (var i = 0, l = events.length; i < l; i++) {
@@ -290,10 +379,11 @@ times = async () => {
     "time" :"$times.time"
 
   }}
-
+  
   var lookup2 = { "$lookup" : { from: "entities", localField: "times._id", foreignField: "_id", as: "times.times"}};
-  var group = { "$group" : { "_id" : "$_id", "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
+  var group = { "$group" : { "_id" : "$_id", "ad_version": {$first: "$version"}, "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
   var out = {"$out" : "session_times"}
   const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group, out]);
   console.log(event)
 };
+times();
