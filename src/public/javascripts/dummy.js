@@ -18,7 +18,6 @@ $(document).ready(function () {
         url: "/insert/session",
         data: session,
         success: function (result) {
-            console.log(result);
             session_id = result;
         }
     });
@@ -30,7 +29,7 @@ $(document).ready(function () {
             session_id: session_id,
             event_name: $(this).text(),
             orientation: $("#orientation").text(),
-            event_number: counter
+            event_number: counter,
         };
 
         counter++;

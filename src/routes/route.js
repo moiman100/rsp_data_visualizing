@@ -60,7 +60,7 @@ router.post('/insert/session', function (req, res, next) {
                 os: req.body.os,
                 os_version: req.body.os_version,
                 device: req.body.device,
-                location: req.body.location
+                location: req.body.location,
             });
 
             userSession.save()

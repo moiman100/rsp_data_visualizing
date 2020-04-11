@@ -226,11 +226,36 @@ exports.getTotals = async (req, res, next) => {
   }
 };
 
+
+function prepareParams(req) {
+  // Prepares params for query ////////////////////////////////////////////////
+  req.body.params.start_date = {};
+  if (req.body.params.sDate != "") {
+    req.body.params.start_date.$gte = req.body.params.sDate;
+  }
+  delete req.body.params.sDate;
+  if (req.body.params.eDate != "") {
+    req.body.params.start_date.$lte = req.body.params.eDate;
+  }
+  delete req.body.params.eDate;
+  if (Object.keys(req.body.params.start_date).length === 0) {
+    delete req.body.params.start_date;
+  }
+
+  req.body.params.os = {};
+  req.body.params.os.$in = req.body.params.platforms;
+  delete req.body.params.platforms;
+  /////////////////////////////////////////////////////////////////////////////
+}
+
 // @desc    Gets funnel expects the order of events and the filter parameters
 // @route   POST /api/funnel
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
+
+  prepareParams(req);
+
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
@@ -274,6 +299,9 @@ exports.sankey = async (req, res, next) => {
       value: [],
     }
   };
+
+  prepareParams(req);
+
   let node = data.node.label.push("start") - 1;
 
   async function addNodes(event_number, sessions, source_node) {
