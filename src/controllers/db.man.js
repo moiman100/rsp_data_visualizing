@@ -227,14 +227,14 @@ exports.getTotals = async (req, res, next) => {
 };
 
 // @desc    Gets funnel expects the order of events and the filter parameters
-// @route   GET /api/funnel
+// @route   POST /api/funnel
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
-    var temp = [];
+    var events = [];
     for (const sess of sessions) {
       // could be handled better
       const event = await AdEvent.find({
@@ -247,19 +247,69 @@ exports.funs = async (req, res, next) => {
       }
     }
 
-    const jsonevents = JSON.parse(JSON.stringify(events));
-    temp = jsonevents;
-    var t0 = new Date().getTime();
     for (var i = 0, l = funnel.length; i < l; i++) {
-      temp = countings(funnel, temp, i);
-      result.push(temp.length);
+      events = countings(funnel, events, i);
+      result.push(events.length);
     }
-    var t1 = new Date().getTime();
-    console.log("Funneling took " + (t1 - t0) + " milliseconds.");
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// @desc    Gets sankey expects the adversion._id and the filter parameters
+// @route   POST /api/sankey
+exports.sankey = async (req, res, next) => {
+  data = {
+    node: {
+      label: [],
+    },
+    link: {
+      source: [],
+      target: [],
+      value: [],
+    }
+  };
+  let node = data.node.label.push("start") - 1;
+
+  async function addNodes(event_number, sessions, source_node) {
+    const event_names = {};
+    for (const session of sessions) {
+      try {
+        const event = await AdEvent.findOne({ session: session.id, event_number: event_number });
+        if (!event) {
+          continue;
+        }
+        if (!event_names[event.event_name]) {
+          event_names[event.event_name] = [];
+
+        }
+        event_names[event.event_name].push(session);
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    for (let [event_name, sessions2] of Object.entries(event_names)) {
+      let node = data.node.label.push(event_name) - 1;
+      data.link.source.push(source_node);
+      data.link.target.push(node);
+      data.link.value.push(sessions2.length);
+      await addNodes(event_number + 1, sessions2, node);
+    }
+  }
+
+  try {
+    const sessions = await UserSession.find(req.body.params);
+
+    await addNodes(1, sessions, node);
+    return res.status(200).json({
+      success: true,
+      data: data,
     });
   } catch (err) {
     console.log(err);
@@ -272,8 +322,8 @@ function countings(funnel, events, index) {
   for (var i = 0, l = events.length; i < l; i++) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
-        JSON.stringify(funnel[index]) ===
-          JSON.stringify(events[i].events[n].event_name) &&
+        funnel[index] ===
+        events[i].events[n].event_name &&
         events[i].events[n].event_number === index + 1
       ) {
         /*console.log("fub:" + funnel[index] + index)
@@ -284,3 +334,5 @@ function countings(funnel, events, index) {
   }
   return result;
 }
+
+
