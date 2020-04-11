@@ -335,7 +335,7 @@ exports.funs_aggregate = async (req, res, next) => {
     events = await aggregate(funnel,sess_id);
     temp = events[0]
     for(const key in temp) {
-      if(temp[key]) {
+      if(temp[key] != null) {
         result.push(temp[key])
 
       }
