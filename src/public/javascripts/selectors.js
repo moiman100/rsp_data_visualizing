@@ -86,7 +86,7 @@ function Selectors(props) {
     }, []);
 
     return (
-        <Grid container>
+        <Grid container >
             <Grid item xs={6}>
                 <FormControl style={{ marginLeft: "2%" }} className={classes.formControl}>
                     <InputLabel>
@@ -193,10 +193,10 @@ function Selectors(props) {
                     </FormControl>
                 </Box>
             </Grid>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                 <p style={{ marginBottom:"2px", marginLeft: "2%" }}><b>Filters:</b> {dateFilters}</p>
             </Grid>
-            <Grid xs={12}>
+            <Grid item xs={12}>
                 <p style={{ marginTop:"2px", marginLeft: "2%" }}>{otherFilters}</p>
             </Grid>   
         </Grid>
