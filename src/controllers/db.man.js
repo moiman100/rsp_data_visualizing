@@ -269,8 +269,7 @@ exports.funsss = async (req, res, next) => {
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
-  //var ever = new Date("2035-01-01")
-  var ever = 999;
+  var ever = 999; //for cheking if even occured
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
@@ -280,9 +279,8 @@ exports.funs = async (req, res, next) => {
       sess_id.push(mongoose.Types.ObjectId(sess.id));
     }
     
-    var match = { "$match" : { "session" : { "$in" : sess_id } }};
-    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
-    var match2 = { "$match" : { "event_name" : { "$in" : funnel} } }
+    var match = { "$match" : { "session" : { "$in" : sess_id } }}; //match session ids
+    var match2 = { "$match" : { "event_name" : { "$in" : funnel} } } //match names
     var projectActions = {"$project": {  "s" : "$session" }}
 
     funnel.forEach( function(e) { 
@@ -322,31 +320,25 @@ exports.funs = async (req, res, next) => {
        didA = didA + funnel[i]; 
        groupAll["$group"][funnel[i]] = { "$sum" : { "$cond" : [ "$" + didA, 1, 0] } };
      } 
-
-     var projectNeat = { "$project" : { "_id" : 0 } };
-     projectNeat["$project"][didA] = 1;
-     for (var i=1; i < funnel.length; i++) {
-       didA = didA + "then" + funnel[i]; 
-       var timeBtw = "timeBetween" + funnel[0] + "_" + funnel[i]; 
-       projectNeat["$project"][didA] = 1;
-       var avgTime = "avgMinsBetween" + funnel[0] + "_" + funnel[i];
-       projectNeat["$project"][avgTime] = {$cond: [ {$ne:["$"+didA,0]}, { "$divide" : [ { "$divide" : [ "$"+timeBtw, "$"+didA ] } , 6000 ] }, "N/A"]};
-     }  
-
-   
-  //  temp = event;
+  
+    
     var t0 = new Date().getTime();
-   /*for (var i = 0, l = funnel.length; i < l; i++) {
-      temp = countings(funnel, temp, i);
-      result.push(temp.length);
-    }*/
+  
     const event = await AdEvent.aggregate([match,match2, projectActions, groupBySession, projectBool,groupAll]);
     var t1 = new Date().getTime();
     console.log("Funneling took " + (t1 - t0) + " milliseconds.");
+    temp = event[0];
+
+    for(const key in temp) {
+      if(temp[key]) {
+        result.push(temp[key])
+
+      }
+    }
 
     return res.status(400).json({
       success: true,
-      data: event,
+      data: result,
     });
 
   } catch (err) {
@@ -386,4 +378,3 @@ times = async () => {
   const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group, out]);
   console.log(event)
 };
-times();
