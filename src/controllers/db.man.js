@@ -317,11 +317,14 @@ exports.sankey = async (req, res, next) => {
   }
 };
 
+// @desc    Gets funnel expects the order of events and the filter parameters. 
+//Funnel in aggregation pipeline
+// @route   POST /api/funnelalt
 exports.funs_aggregate = async (req, res, next) => {
-  var events = [];
-  const funnel = req.body.order;
-  var ever = 999; //for cheking if even occured
+ 
   try {
+    var events = [];
+    const funnel = req.body.order;
     const sessions = await UserSession.find(req.body.params);
     var result = [];
     var temp = [];
@@ -329,7 +332,44 @@ exports.funs_aggregate = async (req, res, next) => {
     for(const sess of sessions) {
       sess_id.push(mongoose.Types.ObjectId(sess.id));
     }
-    
+    events = await aggregate(funnel,sess_id);
+    temp = events[0]
+    for(const key in temp) {
+      if(temp[key]) {
+        result.push(temp[key])
+
+      }
+    }
+
+    return res.status(400).json({
+      success: true,
+      data: result,
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+function countings(funnel, events, index) {
+  var result = [];
+  for (var i = 0, l = events.length; i < l; i++) {
+    for (var n = 0, k = events[i].events.length; n < k; n++) {
+      if (
+        funnel[index] ===
+         events[i].events[n] &&
+        events[i].numbers[n] === index + 1
+      ) {
+        result.push(events[i]);
+      }
+    }
+  }
+  return result;
+}
+
+aggregate = async (funnel,sess_id) => {
+
+    var ever = 999; //for cheking if even occured
     var match = { "$match" : { "session" : { "$in" : sess_id } }}; //match session ids
     var match2 = { "$match" : { "event_name" : { "$in" : funnel} } } //match names
     var projectActions = {"$project": {  "s" : "$session" }}
@@ -378,39 +418,9 @@ exports.funs_aggregate = async (req, res, next) => {
     const event = await AdEvent.aggregate([match,match2, projectActions, groupBySession, projectBool,groupAll]);
     var t1 = new Date().getTime();
     console.log("Funneling took " + (t1 - t0) + " milliseconds.");
-    temp = event[0];
-
-    for(const key in temp) {
-      if(temp[key]) {
-        result.push(temp[key])
-
-      }
-    }
-
-    return res.status(400).json({
-      success: true,
-      data: result,
-    });
-
-  } catch (err) {
-    console.log(err);
-  }
+    return event;
 };
-function countings(funnel, events, index) {
-  var result = [];
-  for (var i = 0, l = events.length; i < l; i++) {
-    for (var n = 0, k = events[i].events.length; n < k; n++) {
-      if (
-        funnel[index] ===
-         events[i].events[n] &&
-        events[i].numbers[n] === index + 1
-      ) {
-        result.push(events[i]);
-      }
-    }
-  }
-  return result;
-}
+
 
 times = async () => {
   var lookup = { "$lookup" : { from: "events", localField: "_id", foreignField: "session", as: "times"}};
