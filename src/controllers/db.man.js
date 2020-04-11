@@ -2,6 +2,7 @@ const Ad = require("../models/ad.js");
 const AdVersion = require("../models/adversion.js");
 const UserSession = require("../models/session.js");
 const AdEvent = require("../models/event.js");
+const Event_Time = require("../models/event_times.js");
 var mongoose = require('mongoose');
 
 // @desc  maybe a bit bubblegummy solution, calculates totals for events by list of valid event numbers
@@ -351,6 +352,19 @@ exports.funs_aggregate = async (req, res, next) => {
   }
 };
 
+exports.time_test = async (req, res, next) => {
+ 
+  try {
+    return res.status(400).json({
+      success: true,
+      data: await times(),
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 function countings(funnel, events, index) {
   var result = [];
   for (var i = 0, l = events.length; i < l; i++) {
@@ -422,20 +436,44 @@ aggregate = async (funnel,sess_id) => {
 };
 
 
-times = async () => {
+times = async () => { 
+  var timestamps = [];
   var lookup = { "$lookup" : { from: "events", localField: "_id", foreignField: "session", as: "times"}};
   var unwind = {"$unwind": "$times"}
   var project = { "$project": {
     "version":1,
+    "os" :1,
     "start_date" : 1,
     "stop_date" : 1,
     "time" :"$times.time"
-
   }}
-  
+
+  var unwind2 = {"$unwind": "$event_times"}
   var lookup2 = { "$lookup" : { from: "entities", localField: "times._id", foreignField: "_id", as: "times.times"}};
-  var group = { "$group" : { "_id" : "$_id", "ad_version": {$first: "$version"}, "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
+  var group = { "$group" : { "_id" : "$_id", "ad_version": {$first: "$version"}, "os": {$first: "$os"}, "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
   var out = {"$out" : "session_times"}
-  const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group, out]);
-  console.log(event)
+  const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group]);
+
+  for(const e of event) {
+    e.event_times.unshift(e.start);
+    e.event_times.push(e.stop);
+    temp = [];
+    for (var i = 0, l = e.event_times.length -1; i < l; i++) {
+      if(e.event_times[i+1]-e.event_times[i]!=null) {
+        temp.push(e.event_times[i+1]-e.event_times[i])
+      }
+      console.log(e.event_times[i])
+    }
+    var Event_Times = new Event_Time({
+      session: e._id,
+      os: e.os,
+      version: e.ad_version,
+      times: temp
+  });
+  Event_Times.save();
+    //timestamps.push(temp)
+  }
+  
+  //console.log(event)
+  return event
 };
