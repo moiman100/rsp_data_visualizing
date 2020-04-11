@@ -2,6 +2,7 @@ const Ad = require("../models/ad.js");
 const AdVersion = require("../models/adversion.js");
 const UserSession = require("../models/session.js");
 const AdEvent = require("../models/event.js");
+var mongoose = require('mongoose');
 
 // @desc  maybe a bit bubblegummy solution, calculates totals for events by list of valid event numbers
 
@@ -132,7 +133,6 @@ exports.addEvent = async (req, res, next) => {
 };
 // @desc    Get Sessions(s) if req.body is empty gets all, if not the based on the attributes
 // @route   GET /api/session
-
 exports.getSession = async (req, res, next) => {
   try {
     const session = await UserSession.find(req.body);
@@ -231,31 +231,32 @@ exports.getTotals = async (req, res, next) => {
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
+
   try {
     const sessions = await UserSession.find(req.body.params);
     var result = [];
-    var events = [];
-    for (const sess of sessions) {
-      // could be handled better
-      const event = await AdEvent.find({
-        event_name: { $in: req.body.order },
-        event_number: { $gt: 0, $lt: req.body.order.length + 1 },
-        session: sess.id,
-      });
-      if (event.length != 0) {
-        events.push({ session: sess.id, events: event });
-      }
+    var temp = [];
+    var sess_id = []
+    for(const sess of sessions) {
+      sess_id.push(mongoose.Types.ObjectId(sess.id));
+    }
+    
+    var match = { "$match" : { "session" : { "$in" : sess_id } }};
+    var group = { "$group" : { "_id" : "$session", "events": {$push: "$event_name"}, "numbers":{$push: "$event_number"}}};
+
+    const event = await AdEvent.aggregate([match, group]);
+    temp = event;
+
+   for (var i = 0, l = funnel.length; i < l; i++) {
+      temp = countings(funnel, temp, i);
+      result.push(temp.length);
     }
 
-    for (var i = 0, l = funnel.length; i < l; i++) {
-      events = countings(funnel, events, i);
-      result.push(events.length);
-    }
-
-    return res.status(200).json({
+    return res.status(400).json({
       success: true,
       data: result,
     });
+
   } catch (err) {
     console.log(err);
   }
@@ -316,18 +317,49 @@ exports.sankey = async (req, res, next) => {
   }
 };
 
+// @desc    Gets funnel expects the order of events and the filter parameters. 
+//Funnel in aggregation pipeline
+// @route   POST /api/funnelalt
+exports.funs_aggregate = async (req, res, next) => {
+ 
+  try {
+    var events = [];
+    const funnel = req.body.order;
+    const sessions = await UserSession.find(req.body.params);
+    var result = [];
+    var temp = [];
+    var sess_id = []
+    for(const sess of sessions) {
+      sess_id.push(mongoose.Types.ObjectId(sess.id));
+    }
+    events = await aggregate(funnel,sess_id);
+    temp = events[0]
+    for(const key in temp) {
+      if(temp[key] != null) {
+        result.push(temp[key])
+
+      }
+    }
+
+    return res.status(400).json({
+      success: true,
+      data: result,
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 function countings(funnel, events, index) {
   var result = [];
-
   for (var i = 0, l = events.length; i < l; i++) {
     for (var n = 0, k = events[i].events.length; n < k; n++) {
       if (
         funnel[index] ===
-        events[i].events[n].event_name &&
-        events[i].events[n].event_number === index + 1
+         events[i].events[n] &&
+        events[i].numbers[n] === index + 1
       ) {
-        /*console.log("fub:" + funnel[index] + index)
-            console.log("ebv:" + events[i].events[n].event_name + events[i].events[n].event_number)*/
         result.push(events[i]);
       }
     }
@@ -335,4 +367,75 @@ function countings(funnel, events, index) {
   return result;
 }
 
+aggregate = async (funnel,sess_id) => {
 
+    var ever = 999; //for cheking if even occured
+    var match = { "$match" : { "session" : { "$in" : sess_id } }}; //match session ids
+    var match2 = { "$match" : { "event_name" : { "$in" : funnel} } } //match names
+    var projectActions = {"$project": {  "s" : "$session" }}
+
+    funnel.forEach( function(e) { 
+      projectActions["$project"][e] = { };
+      projectActions["$project"][e]["f"] = { "$cond" : [ { "$eq" : [ "$event_name", e ] }, "$event_number", ever ] };
+      projectActions["$project"][e]["t"] = { "$cond" : [ { "$eq" : [ "$event_name", e ] },   1, 0 ] };
+    });
+
+    var groupBySession = { "$group" : { "_id" : "$s" } };
+
+    funnel.forEach( function(e) { 
+      var first = e + "first";
+      var times = e + "times";
+      groupBySession["$group"][first] = { "$min" : "$" + e + ".f" };
+      groupBySession["$group"][times] = { "$sum" : "$" + e + ".t" };
+    });
+
+    var didA =  funnel[0];
+    var andClause = { "$and" : [  ] };
+    var didFirst =  { "$lt" : [ "$" + funnel[0] + "first", ever ] };
+    andClause["$and"].push(didFirst);
+
+    var projectBool = { "$project" : { "_id" : 0, "_id" : "$_id" } };
+    projectBool["$project"][didA] = didFirst;
+
+    for (var i=1; i < funnel.length; i++) { 
+      didA = didA + funnel[i];
+       andClause["$and"].push( { "$lt" : [ "$" + funnel[i] + "first", ever ] } );
+       andClause["$and"].push( { "$gt" : [ "$" + funnel[i] + "first", "$" + funnel[i-1] + "first" ] } );
+       projectBool["$project"][didA] =  { "$and" : [  ] };
+       andClause["$and"].forEach(function(a) { projectBool["$project"][didA]["$and"].push(a); });
+     } 
+
+     var groupAll = { "$group" : { "_id" : null } };
+     var didA = "";
+     for (var i=0; i < funnel.length; i++) { 
+       didA = didA + funnel[i]; 
+       groupAll["$group"][funnel[i]] = { "$sum" : { "$cond" : [ "$" + didA, 1, 0] } };
+     } 
+  
+    
+    var t0 = new Date().getTime();
+  
+    const event = await AdEvent.aggregate([match,match2, projectActions, groupBySession, projectBool,groupAll]);
+    var t1 = new Date().getTime();
+    console.log("Funneling took " + (t1 - t0) + " milliseconds.");
+    return event;
+};
+
+
+times = async () => {
+  var lookup = { "$lookup" : { from: "events", localField: "_id", foreignField: "session", as: "times"}};
+  var unwind = {"$unwind": "$times"}
+  var project = { "$project": {
+    "version":1,
+    "start_date" : 1,
+    "stop_date" : 1,
+    "time" :"$times.time"
+
+  }}
+  
+  var lookup2 = { "$lookup" : { from: "entities", localField: "times._id", foreignField: "_id", as: "times.times"}};
+  var group = { "$group" : { "_id" : "$_id", "ad_version": {$first: "$version"}, "start": {$first: "$start_date"},"stop": {$first: "$stop_date"}, "event_times":{$push: "$time"}}};
+  var out = {"$out" : "session_times"}
+  const event = await UserSession.aggregate([lookup, unwind, lookup2, project, group, out]);
+  console.log(event)
+};
