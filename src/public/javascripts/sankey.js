@@ -86,6 +86,19 @@ function SankeyGraph(props) {
       });
   }
 
+  function saveSankey(checkState) {
+
+    axios
+      .post("/api/graph", {
+        version: ad_version,
+        type: "Sankey",
+        filter_params: checkState,
+      })
+      .then(function (response) {
+        console.log(response.data);
+      });
+  }
+
   useEffect(() => {
     Plotly.react("sankey", sankey_data, {}, { displayModeBar: false })
   }, [sankey_data])
@@ -94,7 +107,7 @@ function SankeyGraph(props) {
     // Could be divided into smaller components
     <Container maxWidth={false}>
       <Card>
-        <Selectors version_changed={getVersionId} get_data={getData} version_selector_id="sankey_version_selector" />
+        <Selectors version_changed={getVersionId} get_data={getData} save_graph={saveSankey} version_selector_id="sankey_version_selector" />
         <Box id="sankey"></Box>
       </Card>
     </Container>

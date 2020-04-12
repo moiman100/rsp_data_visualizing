@@ -126,6 +126,21 @@ function FunnelGraph(props) {
       });
   }
 
+  function saveFunnel(checkState) {
+    let filtered_event_flow = event_flow.filter(element => element != "");
+
+    axios
+      .post("/api/graph", {
+        version: ad_version,
+        type: "Funnel",
+        event_flow: filtered_event_flow,
+        filter_params: checkState,
+      })
+      .then(function (response) {
+        console.log(response.data);
+      });
+  }
+
   useEffect(() => {
     var funnelLayout = {
       yaxis: { range: [0, 1] },
@@ -158,7 +173,7 @@ function FunnelGraph(props) {
     // Could be divided into smaller components
     <Container maxWidth={false}>
       <Card>
-        <Selectors version_changed={getEvents} get_data={getData} version_selector_id="funnel_version_selector" />
+        <Selectors version_changed={getEvents} get_data={getData} save_graph={saveFunnel} version_selector_id="funnel_version_selector" />
 
         <Box id="funnel_graph"></Box>
 

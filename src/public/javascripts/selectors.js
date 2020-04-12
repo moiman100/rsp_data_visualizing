@@ -33,6 +33,7 @@ function Selectors(props) {
 
     const versionChanged = props.version_changed;
     const getData = props.get_data;
+    const saveGraph = props.save_graph;
 
     // Show filters that are used currently
     /////////////////////////////////////////////////////////////////////////////
@@ -125,6 +126,18 @@ function Selectors(props) {
                         </Fab>
                     </Tooltip>
                 </Grid>
+                <Grid item xs={1}>
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title="Save graph"
+                    >
+                        <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => saveGraph(checkState)}>
+                            <Icon >
+                                add
+                            </Icon>
+                        </Fab>
+                    </Tooltip></Grid>
             </Grid>
             <Grid item xs={6}>
                 <Box display="flex" justifyContent="flex-end">

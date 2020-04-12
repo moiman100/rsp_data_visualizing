@@ -98,7 +98,7 @@ exports.insertAd = async (req, res, next) => {
       error: "Server Error",
     });
   }
-};
+}
 
 // @desc    Get adVersion if req.body is empty gets all, if not the based on the attribute(s)
 // @route   GET /api/version
@@ -135,9 +135,9 @@ exports.addVersion = async (req, res, next) => {
     });
   }
 };
+
 // @desc    Get adVersion if req.body is empty gets all, if not the based on the attribute(s)
 // @route   GET /api/version
-
 exports.getVersion = async (req, res, next) => {
   try {
     const version = await AdVersion.find(req.query);

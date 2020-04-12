@@ -10,8 +10,8 @@ var graphSchema = new Schema({
     name: { type: String, default: "new_Graph" },
     type: String,
     date_created: { type: Date, default: Date.now },
-    event_flow: { type : Array , "default" : [] },
-    filter_params: { type : Array , "default" : [] }
+    event_flow: [String],
+    filter_params: {},
 });
 
 module.exports = mongoose.model("Graph", graphSchema);
