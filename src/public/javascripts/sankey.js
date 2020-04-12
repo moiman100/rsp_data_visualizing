@@ -50,7 +50,7 @@ function SankeyGraph(props) {
   return (
     <Card>
       <Selectors version_changed={getVersionId} get_data={getData} version_selector_id="sankey_version_selector" />
-      <Box id="sankey"></Box>
+      <CardMedia id="sankey"></CardMedia>
     </Card>
   );
 }

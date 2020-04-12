@@ -5,11 +5,6 @@ function NavBar(props) {
   return (
   <AppBar position="static">
     <Toolbar>
-        <IconButton >
-          <Icon>
-            menu
-          </Icon>
-        </IconButton>
         <Typography variant="h6">
             <Link href="/" style={{color: colors.common.white}} className={classes.link}>Home</Link>
         </Typography>

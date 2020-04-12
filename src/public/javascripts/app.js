@@ -30,6 +30,11 @@ const {
   Toolbar,
   Link,
   Typography,
+  CardContent,
+  CardMedia,
+  CardHeader,
+  Collapse,
+  CardActions,
 } = MaterialUI;
 
 const { useState, useEffect } = React;
@@ -48,17 +53,32 @@ const useStyles = makeStyles((theme) => ({
   link: {
     margin: theme.spacing(2),
   },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    marginLeft: "auto",
+    transform: "rotate(180deg)",
+  },
 }));
 
 function App(props) {
   const classes = useStyles();
 
   return (
-    <Container>
+    <React.Fragment>
       <NavBar />
-      <FunnelGraph />
-      <SankeyGraph />
-    </Container>
+      <Box m={2}>
+        <FunnelGraph />
+      </Box>
+      <Box m={2}>
+        <SankeyGraph />
+      </Box>
+    </React.Fragment>
   );
 }
 
