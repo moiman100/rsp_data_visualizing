@@ -1,48 +1,4 @@
 "use strict";
-const {
-  Select,
-  NativeSelect,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  FormControlLabel,
-  makeStyles,
-  Container,
-  Button,
-  Card,
-  Box,
-  Icon,
-  Grid,
-  IconButton,
-  Tooltip,
-  colors,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  InputLabelProps,
-  Checkbox,
-  Fab,
-} = MaterialUI;
-
-const { useState, useEffect } = React;
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  fab: {
-    left: theme.spacing(2),
-  },
-}));
-
 // Refactored FunnelGraph
 function FunnelGraph(props) {
   const [graph_data, setGraph_data] = useState([]);
@@ -155,44 +111,41 @@ function FunnelGraph(props) {
   }, [graph_data]);
 
   return (
-    // Could be divided into smaller components
-    <Container maxWidth={false}>
-      <Card>
-        <Selectors version_changed={getEvents} get_data={getData} version_selector_id="funnel_version_selector" />
+    <Card>
+      <Selectors version_changed={getEvents} get_data={getData} version_selector_id="funnel_version_selector" />
 
-        <Box id="funnel_graph"></Box>
+      <Box id="funnel_graph"></Box>
 
-        <Grid container direction="row">
-          <Grid item><Tooltip
-            disableFocusListener
-            disableTouchListener
-            title="Add event"
-          >
-            <Fab style={{ color: colors.common.white, backgroundColor: colors.green[400], fontSize: 40 }} className={classes.fab} onClick={handleAdd}>
-              <Icon >
-                add
-              </Icon>
-            </Fab>
-          </Tooltip></Grid>
-          <Grid item xs={12}>
-            {event_flow.map((selected_event, index) => (
-              <FormControl key={index} className={classes.formControl}>
-                <InputLabel>Event</InputLabel>
+      <Grid container direction="row">
+        <Grid item><Tooltip
+          disableFocusListener
+          disableTouchListener
+          title="Add event"
+        >
+          <Fab style={{ color: colors.common.white, backgroundColor: colors.green[400], fontSize: 40 }} className={classes.fab} onClick={handleAdd}>
+            <Icon >
+              add
+            </Icon>
+          </Fab>
+        </Tooltip></Grid>
+        <Grid item xs={12}>
+          {event_flow.map((selected_event, index) => (
+            <FormControl key={index} className={classes.formControl}>
+              <InputLabel>Event</InputLabel>
 
-                <NativeSelect
-                  value={event_flow[index]}
-                  onChange={() => handleChange(index)}
-                >
-                  <OptionList inputList={available_events} />
-                </NativeSelect>
-                <Button onClick={() => handleRemove(index)}>Remove</Button>
-              </FormControl>
-            ))}
-          </Grid>
+              <NativeSelect
+                value={event_flow[index]}
+                onChange={() => handleChange(index)}
+              >
+                <OptionList inputList={available_events} />
+              </NativeSelect>
+              <Button onClick={() => handleRemove(index)}>Remove</Button>
+            </FormControl>
+          ))}
         </Grid>
+      </Grid>
 
-      </Card>
-    </Container>
+    </Card>
   );
 }
 
@@ -209,6 +162,3 @@ function OptionList(props) {
     </React.Fragment>
   );
 }
-
-const domContainer = document.querySelector("#funnel-graph");
-ReactDOM.render(<FunnelGraph />, domContainer);

@@ -1,47 +1,4 @@
 "use strict";
-const {
-  Select,
-  NativeSelect,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  FormControlLabel,
-  makeStyles,
-  Container,
-  Button,
-  Card,
-  Box,
-  Icon,
-  Grid,
-  IconButton,
-  Tooltip,
-  colors,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  InputLabelProps,
-  Checkbox,
-  Fab,
-} = MaterialUI;
-
-const { useState, useEffect } = React;
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  fab: {
-    left: theme.spacing(2),
-  },
-}));
 // Refactored SankeyGraph
 function SankeyGraph(props) {
   const [sankey_data, setSankey_data] = useState({});
@@ -91,29 +48,9 @@ function SankeyGraph(props) {
   }, [sankey_data])
 
   return (
-    // Could be divided into smaller components
-    <Container maxWidth={false}>
-      <Card>
-        <Selectors version_changed={getVersionId} get_data={getData} version_selector_id="sankey_version_selector" />
-        <Box id="sankey"></Box>
-      </Card>
-    </Container>
+    <Card>
+      <Selectors version_changed={getVersionId} get_data={getData} version_selector_id="sankey_version_selector" />
+      <Box id="sankey"></Box>
+    </Card>
   );
 }
-
-// This doesn't work in Select for some reason so using NativeSelect for now
-function OptionList(props) {
-  return (
-    <React.Fragment>
-      <option aria-label="None" value="" disabled />
-      {props.inputList.map((name, index) => (
-        <option key={index} value={name}>
-          {name}
-        </option>
-      ))}
-    </React.Fragment>
-  );
-}
-
-const domContainer = document.querySelector("#sankey-graph");
-ReactDOM.render(<SankeyGraph />, domContainer);
