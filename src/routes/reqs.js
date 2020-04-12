@@ -9,6 +9,7 @@ const {
   getSession,
   insertSession,
   addSession,
+  getSessionPercentage,
   getVersion,
   insertVersion,
   addVersion,
@@ -24,6 +25,7 @@ router.route("/ad").get(getAds).post(addAd);
 router.route("/insert/ad").post(insertAd);
 router.route("/event").get(getEvent).post(addEvent);
 router.route("/session").get(getSession).post(addSession);
+router.route("/session/percentage").post(getSessionPercentage);
 router.route("/insert/session").post(insertSession);
 router.route("/version").get(getVersion).post(addVersion);
 router.route("/insert/version").post(insertVersion);

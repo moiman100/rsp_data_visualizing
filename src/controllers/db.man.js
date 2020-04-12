@@ -234,6 +234,26 @@ exports.addSession = async (req, res, next) => {
   }
 };
 
+// @desc    Get session percentagese
+// @route   POST /api/session/percentage
+exports.getSessionPercentage = async (req, res, next) => {
+  try {
+    const all = await UserSession.count(req.body.version);
+    const session = await UserSession.count(req.body);
+    var percentage = session/all
+    return res.status(200).json({
+      success: true,
+      data: percentage,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
+
 // @desc    Insert sessions
 // @route   POST /api/insert/session
 exports.insertSession = async (req, res, next) => {
