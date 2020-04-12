@@ -47,7 +47,7 @@ exports.addAd = async (req, res, next) => {
   try {
     console.log(req.body);
     const ad = await Ad.create(req.body);
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: ad,
     });
@@ -83,7 +83,7 @@ exports.getVersion = async (req, res, next) => {
 exports.addVersion = async (req, res, next) => {
   try {
     const version = await AdVersion.create(req.body);
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: version,
     });
@@ -119,7 +119,7 @@ exports.addEvent = async (req, res, next) => {
   try {
     console.log(req.body);
     const event = await AdEvent.create(req.body);
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: event,
     });
@@ -155,7 +155,7 @@ exports.addSession = async (req, res, next) => {
   try {
     console.log(req.body);
     const session = await UserSession.create(req.body);
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: session,
     });
@@ -186,7 +186,7 @@ exports.getCompleted = async (req, res, next) => {
       },
     ]);
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       count: result.length,
       data: num, //await funnelings(fun[0],1)
@@ -212,7 +212,7 @@ exports.getTotals = async (req, res, next) => {
 
     counts = await total(num);
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       count: num.length,
       data: JSON.parse(counts),
@@ -276,7 +276,7 @@ exports.funs = async (req, res, next) => {
       result.push(temp.length);
     }
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: result,
     });
@@ -368,7 +368,7 @@ exports.funs_aggregate = async (req, res, next) => {
       }
     }
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: true,
       data: result,
     });
