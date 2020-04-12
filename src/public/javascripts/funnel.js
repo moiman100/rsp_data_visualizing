@@ -86,12 +86,12 @@ function FunnelGraph(props) {
   }
 
   function getData(checkState, selectedStartDate, selectedEndDate) {
-    let labels = [...event_flow];
+    let labels = event_flow.filter(element => element != "");
     labels.forEach((element, index) => {
       labels[index] = element + "(" + index + ")";
     });
     let data_object = {
-      X: labels,
+      x: labels,
       y: [],
       type: "bar",
     };
@@ -106,9 +106,11 @@ function FunnelGraph(props) {
     // some API call to get data for the graph
     // call should send ad, ad_version and event_flow to server
 
+    let filtered_event_flow = event_flow.filter(element => element != "");
+
     axios
       .post("/api/funnel", {
-        order: event_flow,
+        order: filtered_event_flow,
 
         params: {
           version: ad_version,
@@ -124,38 +126,33 @@ function FunnelGraph(props) {
       });
   }
 
-  // Funnel graph configurations
-//////////////////////////////////////////////////////////////////////////////
-  try { 
-    var funnelData = [{
-      x:graph_data[0]["X"],
-      y:graph_data[0]["y"],
-      type:"bar"
-    }]
-  } catch(err) {}
-
-  var funnelLayout = {
-    yaxis: {range: [0,1]},
-    xaxis: {range: [0,1]}
-  }
-  try {
-    let maxY = Math.max.apply(null, graph_data[0]["X"]); //Find highst value on the returned data
-    let countX = graph_data[0]["y"].length; // Count of events returned
-    funnelLayout = {
-      yaxis: {range: [0,maxY]},
-      xaxis: {range: [-0.5,countX]}
-    }
-  } catch(err) {}
-
   useEffect(() => {
+    var funnelLayout = {
+      yaxis: { range: [0, 1] },
+      xaxis: { range: [0, 1] }
+    }
+    try {
+      if (graph_data[0]["y"].length > 0) {
+        console.log(graph_data[0].y)
+        let maxY = Math.max.apply(null, graph_data[0]["y"]); //Find highest value on the returned data
+        maxY = maxY == 0 ? 1 : maxY;
+        let countX = graph_data[0]["x"].length; // Count of events returned
+        funnelLayout = {
+          yaxis: { range: [0, maxY] },
+          xaxis: { range: [-0.5, countX] }
+        }
+      }
+    } catch (err) {
+
+    }
+
     Plotly.react(
       "funnel_graph",
-      funnelData,
+      graph_data,
       funnelLayout,
       { displayModeBar: false, doubleClickDelay: 500 }
     );
-  }, [funnelData]);
-//////////////////////////////////////////////////////////////////////////////
+  }, [graph_data]);
 
   return (
     // Could be divided into smaller components
@@ -171,7 +168,7 @@ function FunnelGraph(props) {
             disableTouchListener
             title="Add event"
           >
-            <Fab style={{ color: colors.common.white, backgroundColor: colors.green[400], fontSize: 50 }} className={classes.fab} onClick={handleAdd}>
+            <Fab style={{ color: colors.common.white, backgroundColor: colors.green[400], fontSize: 40 }} className={classes.fab} onClick={handleAdd}>
               <Icon >
                 add
               </Icon>
