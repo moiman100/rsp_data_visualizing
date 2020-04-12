@@ -2,7 +2,6 @@ var counter = 1;
 var session_id = 1;
 
 $(document).ready(function () {
-    console.log($("#ad-name").text());
     var session = {
         advertisement: $("#ad-name").text(),
         ad_version: $("#ad-version").text(),
