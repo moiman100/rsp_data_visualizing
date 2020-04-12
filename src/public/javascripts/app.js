@@ -76,10 +76,10 @@ function App(props) {
 
   function addGraph(name, index) {
     if (name == "funnel") {
-      return <FunnelGraph key={index} />;
+      return <FunnelGraph key={index} index={index} />;
     }
     if (name == "sankey") {
-      return <SankeyGraph key={index} />;
+      return <SankeyGraph key={index} index={index} />;
     }
   }
 

@@ -44,7 +44,12 @@ function SankeyGraph(props) {
   }
 
   useEffect(() => {
-    Plotly.react("sankey", sankey_data, {}, { displayModeBar: false });
+    Plotly.react(
+      "sankey" + props.index,
+      sankey_data,
+      {},
+      { displayModeBar: false }
+    );
   }, [sankey_data]);
 
   return (
@@ -54,7 +59,7 @@ function SankeyGraph(props) {
         get_data={getData}
         version_selector_id="sankey_version_selector"
       />
-      <CardContent id="sankey"></CardContent>
+      <CardContent id={"sankey" + props.index}></CardContent>
     </Card>
   );
 }

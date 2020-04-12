@@ -105,7 +105,7 @@ function FunnelGraph(props) {
       }
     } catch (err) {}
 
-    Plotly.react("funnel_graph", graph_data, funnelLayout, {
+    Plotly.react("funnel_graph" + props.index, graph_data, funnelLayout, {
       displayModeBar: false,
       doubleClickDelay: 500,
     });
@@ -119,7 +119,7 @@ function FunnelGraph(props) {
         version_selector_id="funnel_version_selector"
       />
 
-      <CardContent id="funnel_graph"></CardContent>
+      <CardContent id={"funnel_graph" + props.index}></CardContent>
 
       <CardActions disableSpacing>
         <Tooltip disableFocusListener disableTouchListener title="Add event">
