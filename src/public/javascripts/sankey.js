@@ -44,13 +44,17 @@ function SankeyGraph(props) {
   }
 
   useEffect(() => {
-    Plotly.react("sankey", sankey_data, {}, { displayModeBar: false })
-  }, [sankey_data])
+    Plotly.react("sankey", sankey_data, {}, { displayModeBar: false });
+  }, [sankey_data]);
 
   return (
     <Card>
-      <Selectors version_changed={getVersionId} get_data={getData} version_selector_id="sankey_version_selector" />
-      <CardMedia id="sankey"></CardMedia>
+      <Selectors
+        version_changed={getVersionId}
+        get_data={getData}
+        version_selector_id="sankey_version_selector"
+      />
+      <CardContent id="sankey"></CardContent>
     </Card>
   );
 }

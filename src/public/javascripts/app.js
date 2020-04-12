@@ -35,6 +35,9 @@ const {
   CardHeader,
   Collapse,
   CardActions,
+  Chip,
+  Tabs,
+  Tab,
 } = MaterialUI;
 
 const { useState, useEffect } = React;
@@ -67,17 +70,37 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
+  const [graph_list, setGraph_list] = useState([]);
+
   const classes = useStyles();
+
+  function addGraph(name, index) {
+    if (name == "funnel") {
+      return <FunnelGraph key={index} />;
+    }
+    if (name == "sankey") {
+      return <SankeyGraph key={index} />;
+    }
+  }
 
   return (
     <React.Fragment>
       <NavBar />
-      <Box m={2}>
-        <FunnelGraph />
-      </Box>
-      <Box m={2}>
-        <SankeyGraph />
-      </Box>
+      <Button
+        color="secondary"
+        startIcon={<Icon>add</Icon>}
+        onClick={() => setGraph_list([...graph_list, "funnel"])}
+      >
+        Add funnel
+      </Button>
+      <Button
+        color="secondary"
+        startIcon={<Icon>add</Icon>}
+        onClick={() => setGraph_list([...graph_list, "sankey"])}
+      >
+        Add sankey
+      </Button>
+      {graph_list.map((name, index) => addGraph(name, index))}
     </React.Fragment>
   );
 }

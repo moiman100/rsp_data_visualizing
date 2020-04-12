@@ -5,6 +5,7 @@ function FunnelGraph(props) {
   const [available_events, setAvailable_events] = useState([]);
   const [ad_version, setAd_version] = useState("");
   const [event_flow, setEvent_flow] = useState([]);
+  const [expanded, setExpanded] = useState(true);
   const classes = useStyles();
 
   function handleChange(index) {
@@ -21,6 +22,10 @@ function FunnelGraph(props) {
 
   function handleAdd() {
     setEvent_flow([...event_flow, ""]);
+  }
+
+  function handleExpandClick() {
+    setExpanded(!expanded);
   }
 
   function getEvents(ad_version_id) {
@@ -42,7 +47,7 @@ function FunnelGraph(props) {
   }
 
   function getData(checkState, selectedStartDate, selectedEndDate) {
-    let labels = event_flow.filter(element => element != "");
+    let labels = event_flow.filter((element) => element != "");
     labels.forEach((element, index) => {
       labels[index] = element + "(" + index + ")";
     });
@@ -62,7 +67,7 @@ function FunnelGraph(props) {
     // some API call to get data for the graph
     // call should send ad, ad_version and event_flow to server
 
-    let filtered_event_flow = event_flow.filter(element => element != "");
+    let filtered_event_flow = event_flow.filter((element) => element != "");
 
     axios
       .post("/api/funnel", {
@@ -76,7 +81,7 @@ function FunnelGraph(props) {
         },
       })
       .then(function (response) {
-        data_object.y = response.data.data // from API
+        data_object.y = response.data.data; // from API
         let data_object_list = [data_object];
         setGraph_data(data_object_list);
       });
@@ -85,50 +90,59 @@ function FunnelGraph(props) {
   useEffect(() => {
     var funnelLayout = {
       yaxis: { range: [0, 1] },
-      xaxis: { range: [0, 1] }
-    }
+      xaxis: { range: [0, 1] },
+    };
     try {
       if (graph_data[0]["y"].length > 0) {
-        console.log(graph_data[0].y)
+        console.log(graph_data[0].y);
         let maxY = Math.max.apply(null, graph_data[0]["y"]); //Find highest value on the returned data
         maxY = maxY == 0 ? 1 : maxY;
         let countX = graph_data[0]["x"].length; // Count of events returned
         funnelLayout = {
           yaxis: { range: [0, maxY] },
-          xaxis: { range: [-0.5, countX] }
-        }
+          xaxis: { range: [-0.5, countX] },
+        };
       }
-    } catch (err) {
+    } catch (err) {}
 
-    }
-
-    Plotly.react(
-      "funnel_graph",
-      graph_data,
-      funnelLayout,
-      { displayModeBar: false, doubleClickDelay: 500 }
-    );
+    Plotly.react("funnel_graph", graph_data, funnelLayout, {
+      displayModeBar: false,
+      doubleClickDelay: 500,
+    });
   }, [graph_data]);
 
   return (
     <Card>
-      <Selectors version_changed={getEvents} get_data={getData} version_selector_id="funnel_version_selector" />
+      <Selectors
+        version_changed={getEvents}
+        get_data={getData}
+        version_selector_id="funnel_version_selector"
+      />
 
-      <Box id="funnel_graph"></Box>
+      <CardContent id="funnel_graph"></CardContent>
 
-      <Grid container direction="row">
-        <Grid item><Tooltip
-          disableFocusListener
-          disableTouchListener
-          title="Add event"
+      <CardActions disableSpacing>
+        <Tooltip disableFocusListener disableTouchListener title="Add event">
+          <Button
+            color="primary"
+            onClick={handleAdd}
+            startIcon={<Icon>add</Icon>}
+          >
+            Add event
+          </Button>
+        </Tooltip>
+
+        <IconButton
+          className={expanded ? classes.expandOpen : classes.expand}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
         >
-          <Fab style={{ color: colors.common.white, backgroundColor: colors.green[400], fontSize: 40 }} className={classes.fab} onClick={handleAdd}>
-            <Icon >
-              add
-            </Icon>
-          </Fab>
-        </Tooltip></Grid>
-        <Grid item xs={12}>
+          <Icon>expand_more</Icon>
+        </IconButton>
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
           {event_flow.map((selected_event, index) => (
             <FormControl key={index} className={classes.formControl}>
               <InputLabel>Event</InputLabel>
@@ -137,28 +151,18 @@ function FunnelGraph(props) {
                 value={event_flow[index]}
                 onChange={() => handleChange(index)}
               >
-                <OptionList inputList={available_events} />
+                <option aria-label="None" value="" disabled />
+                {available_events.map((name, index) => (
+                  <option key={index} value={name}>
+                    {name}
+                  </option>
+                ))}
               </NativeSelect>
               <Button onClick={() => handleRemove(index)}>Remove</Button>
             </FormControl>
           ))}
-        </Grid>
-      </Grid>
-
+        </CardContent>
+      </Collapse>
     </Card>
-  );
-}
-
-// This doesn't work in Select for some reason so using NativeSelect for now
-function OptionList(props) {
-  return (
-    <React.Fragment>
-      <option aria-label="None" value="" disabled />
-      {props.inputList.map((name, index) => (
-        <option key={index} value={name}>
-          {name}
-        </option>
-      ))}
-    </React.Fragment>
   );
 }

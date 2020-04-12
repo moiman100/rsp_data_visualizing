@@ -5,6 +5,8 @@ function Selectors(props) {
   const [available_ad_versions, setAvailable_ad_versions] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [start_date_string, setStart_date_string] = useState("");
+  const [end_date_string, setEnd_date_string] = useState("");
   const [open, setOpen] = useState(false);
   const [checkState, setCheckState] = useState({
     Android: true,
@@ -12,7 +14,10 @@ function Selectors(props) {
     Horizontal: true,
     Vertical: true,
   });
-  const [expanded, setExpanded] = useState(false);
+  const [other_filters, setOther_filters] = useState("");
+  const [ad_name, setAd_name] = useState("");
+  const [ad_version, setAd_version] = useState("");
+  const [expanded, setExpanded] = useState(true);
 
   const { Android, iOS, Horizontal, Vertical } = checkState;
   const classes = useStyles();
@@ -22,11 +27,15 @@ function Selectors(props) {
 
   // Filter handlers
   function handleStartDateChange(date) {
-    setSelectedStartDate(date.target.value.toString());
+    let date_object = new Date(date.target.value);
+    setStart_date_string(date_object.toDateString());
+    setSelectedStartDate(date.target.value);
   }
 
   function handleEndDateChange(date) {
-    setSelectedEndDate(date.target.value.toString());
+    let date_object = new Date(date.target.value);
+    setEnd_date_string(date_object.toDateString());
+    setSelectedEndDate(date.target.value);
   }
 
   function handleClickOpen() {
@@ -44,42 +53,6 @@ function Selectors(props) {
   const versionChanged = props.version_changed;
   const getData = props.get_data;
 
-  // Show filters that are used currently
-  /////////////////////////////////////////////////////////////////////////////
-  function showFilters(selectedEndDate, selectedStartDate, checkState) {
-    var dateFilters = "";
-    var otherFilters = "";
-    if (selectedStartDate && selectedEndDate) {
-      var startDate = selectedStartDate.toString().split("-");
-      var stopDate = selectedEndDate.toString().split("-");
-      dateFilters =
-        startDate[2] +
-        "/" +
-        startDate[1] +
-        "/" +
-        startDate[0] +
-        " - " +
-        stopDate[2] +
-        "/" +
-        stopDate[1] +
-        "/" +
-        stopDate[0];
-    }
-    for (var i in checkState) {
-      if (checkState[i] === true) {
-        otherFilters = otherFilters.concat(i, ";");
-      }
-    }
-    return { dateFilters, otherFilters };
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  const { dateFilters, otherFilters } = showFilters(
-    selectedEndDate,
-    selectedStartDate,
-    checkState
-  );
-
   function getAds() {
     // some API call to get a list of ads
     let ad_list;
@@ -90,6 +63,7 @@ function Selectors(props) {
   }
 
   function getAdVersions() {
+    setAd_name(available_ads[event.target.selectedIndex - 1].name);
     let ad_id = available_ads[event.target.selectedIndex - 1]._id;
     // some API call to get a list of ad versions
     let version_list;
@@ -107,21 +81,41 @@ function Selectors(props) {
   }
 
   useEffect(() => {
+    var otherFilters = "";
+    for (let [key, value] of Object.entries(checkState)) {
+      if (value) {
+        otherFilters = otherFilters.concat(key, " ");
+      }
+    }
+    setOther_filters(otherFilters);
+  }, [checkState]);
+
+  useEffect(() => {
     getAds();
   }, []);
 
   return (
     <React.Fragment>
-      <CardActions>
-        <IconButton
-          className={expanded ? classes.expandOpen : classes.expand}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <Icon>expand_more</Icon>
-        </IconButton>
-      </CardActions>
+      <CardHeader
+        title={ad_name + (ad_version == "" ? "" : " - " + ad_version)}
+        subheader={
+          (start_date_string == "" ? "" : start_date_string + " - ") +
+          end_date_string +
+          " " +
+          other_filters
+        }
+        action={
+          <IconButton
+            className={expanded ? classes.expandOpen : classes.expand}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <Icon>expand_more</Icon>
+          </IconButton>
+        }
+      />
+
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Grid container>
           <Grid item xs={6}>
@@ -146,11 +140,15 @@ function Selectors(props) {
               <NativeSelect
                 id={props.version_selector_id}
                 defaultValue=""
-                onChange={() =>
+                onChange={() => {
                   versionChanged(
                     available_ad_versions[event.target.selectedIndex - 1]._id
-                  )
-                }
+                  );
+                  setAd_version(
+                    available_ad_versions[event.target.selectedIndex - 1]
+                      .version_name
+                  );
+                }}
               >
                 <option aria-label="None" value="" disabled />
                 {available_ad_versions.map((object, index) => (
@@ -271,14 +269,6 @@ function Selectors(props) {
                 </Dialog>
               </FormControl>
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <p style={{ marginBottom: "2px", marginLeft: "2%" }}>
-              <b>Filters:</b> {dateFilters}
-            </p>
-          </Grid>
-          <Grid item xs={12}>
-            <p style={{ marginTop: "2px", marginLeft: "2%" }}>{otherFilters}</p>
           </Grid>
         </Grid>
       </Collapse>
