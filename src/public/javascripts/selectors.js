@@ -88,6 +88,7 @@ function Selectors(props) {
 
     return (
         <Grid container >
+
             <Grid item xs={6}>
                 <FormControl style={{ marginLeft: "2%" }} className={classes.formControl}>
                     <InputLabel>
@@ -113,31 +114,33 @@ function Selectors(props) {
                         ))}
                     </NativeSelect>
                 </FormControl>
-                <Grid item xs={1}>
-                    <Tooltip
-                        disableFocusListener
-                        disableTouchListener
-                        title="Update graph"
-                    >
-                        <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => getData(checkState, selectedStartDate, selectedEndDate)}>
-                            <Icon >
-                                sync
+                <Grid container>
+                    <Grid item xs={2}>
+                        <Tooltip
+                            disableFocusListener
+                            disableTouchListener
+                            title="Update graph"
+                        >
+                            <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => getData(checkState, selectedStartDate, selectedEndDate)}>
+                                <Icon >
+                                    sync
                             </Icon>
-                        </Fab>
-                    </Tooltip>
+                            </Fab>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Tooltip
+                            disableFocusListener
+                            disableTouchListener
+                            title="Save graph"
+                        >
+                            <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => saveGraph(checkState)}>
+                                <Icon >
+                                    save
+                            </Icon>
+                            </Fab>
+                        </Tooltip></Grid>
                 </Grid>
-                <Grid item xs={1}>
-                    <Tooltip
-                        disableFocusListener
-                        disableTouchListener
-                        title="Save graph"
-                    >
-                        <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => saveGraph(checkState)}>
-                            <Icon >
-                                add
-                            </Icon>
-                        </Fab>
-                    </Tooltip></Grid>
             </Grid>
             <Grid item xs={6}>
                 <Box display="flex" justifyContent="flex-end">
