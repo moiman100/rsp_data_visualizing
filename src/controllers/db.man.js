@@ -2,6 +2,7 @@ const Ad = require("../models/ad.js");
 const AdVersion = require("../models/adversion.js");
 const UserSession = require("../models/session.js");
 const AdEvent = require("../models/event.js");
+const Graph = require("../models/graph.js");
 var mongoose = require('mongoose');
 var async = require('async');
 
@@ -134,6 +135,24 @@ exports.addVersion = async (req, res, next) => {
     });
   }
 };
+// @desc    Get adVersion if req.body is empty gets all, if not the based on the attribute(s)
+// @route   GET /api/version
+
+exports.getVersion = async (req, res, next) => {
+  try {
+    const version = await AdVersion.find(req.query);
+    return res.status(200).json({
+      success: true,
+      count: version.length,
+      data: version,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
 
 // @desc    Add adVersion for ad
 // @route   POST /api/insert/version
@@ -153,6 +172,42 @@ exports.insertVersion = async (req, res, next) => {
     return res.status(200).json({
       data: adVersion,
       success: true,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+}
+
+// @desc    Save graph
+// @route   POST /api/graph
+exports.addGraph = async (req, res, next) => {
+  try {
+    const graph = await Graph.create(req.body);
+    return res.status(200).json({
+      success: true,
+      data: graph,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
+
+// @desc    Get saved graphs if req.body is empty gets all, if not the based on the attribute(s)
+// @route   GET /api/graph
+exports.getGraph = async (req, res, next) => {
+  try {
+    const graph = await Graph.find(req.query);
+    return res.status(200).json({
+      success: true,
+      count: graph.length,
+      data: graph,
     });
   } catch (err) {
     return res.status(500).json({
