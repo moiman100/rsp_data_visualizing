@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     transform: "rotate(180deg)",
   },
+  card: {
+    margin: theme.spacing(3),
+  },
 }));
 
 function App(props) {
@@ -78,17 +81,23 @@ function App(props) {
   function addGraph(name, index) {
     if (name == "funnel") {
       return (
-        <FunnelGraph key={index} index={index} remove_graph={removeGraph} />
+        <Grid item xs={6}>
+          <FunnelGraph key={index} index={index} remove_graph={removeGraph} />
+        </Grid>
       );
     }
     if (name == "funnel2") {
       return (
-        <FunnelGraph2 key={index} index={index} remove_graph={removeGraph} />
+        <Grid item xs={6}>
+          <FunnelGraph2 key={index} index={index} remove_graph={removeGraph} />
+        </Grid>
       );
     }
     if (name == "sankey") {
       return (
-        <SankeyGraph key={index} index={index} remove_graph={removeGraph} />
+        <Grid item xs={6}>
+          <SankeyGraph key={index} index={index} remove_graph={removeGraph} />
+        </Grid>
       );
     }
   }
@@ -128,9 +137,11 @@ function App(props) {
       >
         Add sankey
       </Button>
-      {Object.entries(graph_list).map((element) =>
-        addGraph(element[1], element[0])
-      )}
+      <Grid container>
+        {Object.entries(graph_list).map((element) =>
+          addGraph(element[1], element[0])
+        )}
+      </Grid>
     </React.Fragment>
   );
 }

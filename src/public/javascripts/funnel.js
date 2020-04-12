@@ -103,7 +103,7 @@ function FunnelGraph(props) {
           xaxis: { range: [-0.5, countX] },
         };
       }
-    } catch (err) {}
+    } catch (err) { }
 
     Plotly.react("funnel_graph" + props.index, graph_data, funnelLayout, {
       displayModeBar: false,
@@ -112,7 +112,7 @@ function FunnelGraph(props) {
   }, [graph_data]);
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <Selectors
         version_changed={getEvents}
         get_data={getData}
