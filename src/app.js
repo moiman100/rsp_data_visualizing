@@ -1,7 +1,6 @@
 var express = require("express");
 const path = require("path");
 var bodyParser = require("body-parser");
-var routes = require("/usr/src/app/src/routes/route.js");
 var reqs = require("/usr/src/app/src/routes/reqs.js");
 var mongoose = require('mongoose');
 mongoose.connect("mongodb://mongo:27017/test", { useNewUrlParser: true });
@@ -15,7 +14,6 @@ app.set("view engine", "ejs");
 
 // serve public directory
 app.use(express.static("src/public"));
-app.use("/", routes);
 app.use("/api/", reqs);
 
 app.get("/", (req, res) => {

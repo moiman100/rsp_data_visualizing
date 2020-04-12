@@ -15,10 +15,11 @@ $(document).ready(function () {
 
     $.ajax({
         type: "POST",
-        url: "/insert/session",
+        url: "/api/insert/session",
         data: session,
         success: function (result) {
-            session_id = result;
+            console.log(result);
+            session_id = result.data._id;
         }
     });
 });
@@ -26,7 +27,7 @@ $(document).ready(function () {
 $(document).ready(function () {
     $(".event").click(function () {
         var event = {
-            session_id: session_id,
+            session: session_id,
             event_name: $(this).text(),
             orientation: $("#orientation").text(),
             event_number: counter,
@@ -36,10 +37,9 @@ $(document).ready(function () {
 
         $.ajax({
             type: "POST",
-            url: "/insert/event",
+            url: "/api/event",
             data: event,
             success: function () {
-
             }
         });
     });

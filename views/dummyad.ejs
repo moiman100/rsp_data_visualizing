@@ -9,29 +9,40 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
-            $("#btn3").click(function () {
-                var typeList = ["Click", "Clack", "Clock", "Pop", "Download"];
-
+            $("#btn1").click(function () {
+                var typeList = ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6", "Download Game"];
                 var jsonStr = JSON.stringify(typeList);
                 var advertisement = {
-                    name: "Test Advertisement",
-                    version: "V87",
+                    name: "Playable Ad",
+                    version: "V1.0",
                     language: "English",
-                    types: jsonStr
-
+                    types: jsonStr,
                 };
 
                 $.ajax({
                     type: "POST",
-                    url: "/insert/ad",
+                    url: "/api/insert/ad",
                     data: advertisement,
                     success: function (result) {
-
                     }
                 });
             });
 
             $("#btn2").click(function () {
+                var advertisement = {
+                    name: $("#ad-name").val(),
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/ad",
+                    data: advertisement,
+                    success: function (result) {
+                    }
+                });
+            });
+
+            $("#btn3").click(function () {
                 var typeList = [];
                 $("ol li").each(function () {
                     var $type = $(this).find("input");
@@ -40,26 +51,48 @@
 
                 var jsonStr = JSON.stringify(typeList);
                 var advertisement = {
-                    name: $("#ad-name").val(),
+                    name: $("#ad-name-version").val(),
                     version: $("#ad-version").val(),
                     language: $("#ad-language").val(),
-                    types: jsonStr
-
+                    types: jsonStr,
                 };
 
                 $.ajax({
                     type: "POST",
-                    url: "/insert/ad",
+                    url: "/api/insert/version",
                     data: advertisement,
                     success: function (result) {
-
                     }
                 });
             });
 
-            $("#btn1").click(function () {
+            $("#btn4").click(function () {
                 $("#type-list").append('<li><div class="input"><label for="version">Event type: </label><input type="text" id="type" name="type" value="Click"><br><br></div></li>');
+            });
 
+            $("#btn5").click(function () {
+                var events = [];
+                $("#event-list li").each(function () {
+                    var $event = $(this).find("input");
+                    events.push($event.val());
+                });
+
+                var jsonStr = JSON.stringify(events);
+                var data = {
+                    name: $("#name").val(),
+                    version: $("#version").val(),
+                    language: $("#language").val(),
+                    session_count: $("#session-count").val(),
+                    event_count: $("#event-count").val(),
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/dummyevents",
+                    data: data,
+                    success: function (result) {
+                    }
+                });
             });
         });
     </script>
@@ -69,11 +102,16 @@
     <h1>Insert Data</h3>
         <section class="insert-ad">
             <h2>Use this to insert Advertisement if not already in database</h4>
-                <button id="btn3">Insert default advertisement</button><br><br>
+                <button id="btn1">Insert advertisement for Playable Ad</button><br><br>
                 <h2>Use the default values for testing</h5>
                     <div class="input">
                         <label for="name">Advertisement Name:</label>
                         <input type="text" id="ad-name" name="name" value="Test Advertisement"><br><br>
+                    </div>
+                    <button id="btn2">Insert Ad</button><br><br>
+                    <div class="input">
+                        <label for="name">Advertisement Name:</label>
+                        <input type="text" id="ad-name-version" name="name" value="Test Advertisement"><br><br>
                     </div>
                     <div class="input">
                         <label for="version">Advertisement Version:</label>
@@ -92,33 +130,30 @@
                         </li>
                     </ol>
 
-                    <button id="btn2">Insert</button>
-
-                    <button id="btn1">More types</button>
+                    <button id="btn3">Insert Version</button>
+                    <button id="btn4">More types</button>
         </section>
 
         <section class="insert-events">
             <h2>Use this to insert user sessions and events</h4>
                 <h2>Use the default values for testing</h5>
-                    <form action="/insert/dummyevents" method="post">
-                        <div class="input">
-                            <label for="name">Advertisement Name:</label>
-                            <input type="text" id="name" name="name" value="Test Advertisement"><br><br>
-                        </div>
-                        <div class="input">
-                            <label for="version">Advertisement Version:</label>
-                            <input type="text" id="version" name="version" value="V87"><br><br>
-                        </div>
-                        <div class="input">
-                            <label for="session_count">User session count:</label>
-                            <input type="text" id="session_count" name="session_count" value="10"><br><br>
-                        </div>
-                        <div class="input">
-                            <label for="event_count">Event count:</label>
-                            <input type="text" id="event_count" name="event_count" value="10"><br><br>
-                        </div>
-                        <button type="submit">Insert</button><br><br>
-                    </form>
+                    <div class="input">
+                        <label for="name">Advertisement Name:</label>
+                        <input type="text" id="name" name="name" value="Test Advertisement"><br><br>
+                    </div>
+                    <div class="input">
+                        <label for="version">Advertisement Version:</label>
+                        <input type="text" id="version" name="version" value="V87"><br><br>
+                    </div>
+                    <div class="input">
+                        <label for="session-count">User session count:</label>
+                        <input type="text" id="session-count" name="session-count" value="10"><br><br>
+                    </div>
+                    <div class="input">
+                        <label for="event-count">Event count:</label>
+                        <input type="text" id="event-count" name="event-count" value="10"><br><br>
+                    </div>
+                    <button id="btn5">Insert</button><br><br>
         </section>
         <button class="link"><a href="/">Home</a></button>
 </body>
