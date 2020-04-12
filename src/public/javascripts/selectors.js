@@ -118,7 +118,7 @@ function Selectors(props) {
                         disableTouchListener
                         title="Update graph"
                     >
-                        <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 50 }} className={classes.fab} onClick={() => getData(checkState, selectedStartDate, selectedEndDate)}>
+                        <Fab style={{ color: colors.common.white, backgroundColor: colors.blue[400], fontSize: 40 }} className={classes.fab} onClick={() => getData(checkState, selectedStartDate, selectedEndDate)}>
                             <Icon >
                                 sync
                             </Icon>
@@ -194,11 +194,11 @@ function Selectors(props) {
                 </Box>
             </Grid>
             <Grid item xs={12}>
-                <p style={{ marginBottom:"2px", marginLeft: "2%" }}><b>Filters:</b> {dateFilters}</p>
+                <p style={{ marginBottom: "2px", marginLeft: "2%" }}><b>Filters:</b> {dateFilters}</p>
             </Grid>
             <Grid item xs={12}>
-                <p style={{ marginTop:"2px", marginLeft: "2%" }}>{otherFilters}</p>
-            </Grid>   
+                <p style={{ marginTop: "2px", marginLeft: "2%" }}>{otherFilters}</p>
+            </Grid>
         </Grid>
     );
 }
