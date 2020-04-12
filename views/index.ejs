@@ -9,29 +9,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 </head>
 
-<body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="#" class="brand-logo right">Logo</a>
-            <ul id="nav-mobile" class="left hide-on-med-and-down">
-                <li><a href="/">Home</a></li>
-                <li><a href="/dummyad">Insert advertisement</a></li>
-                <li><a href="/dummy">Playable Ad</a></li>
-
-            </ul>
-        </div>
-    </nav>
-    <div class="container center">
-        <h1>
-            <%= title %>
-        </h1>
-        <p>Welcome to
-            <%= title %>
-        </p>
-    </div>
-
-    <div id="funnel-graph"></div>
-    <div id="sankey-graph"></div>
+<body style="margin: 0">
+    <div id="app"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
@@ -42,6 +21,8 @@
     <script type="text/babel" src="/javascripts/selectors.js"></script>
     <script type="text/babel" src="/javascripts/sankey.js"></script>
     <script type="text/babel" src="/javascripts/funnel.js"></script>
+    <script type="text/babel" src="/javascripts/navbar.js"></script>
+    <script type="text/babel" src="/javascripts/app.js"></script>
 </body>
 
 </html>
