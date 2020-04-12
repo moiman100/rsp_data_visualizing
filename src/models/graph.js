@@ -8,6 +8,7 @@ var Schema = mongoose.Schema;
 var graphSchema = new Schema({
     version: { type: Schema.Types.ObjectId, ref: "AdVersion" },
     name: { type: String, default: "new_Graph" },
+    type: String,
     date_created: { type: Date, default: Date.now },
     event_flow: { type : Array , "default" : [] },
     filter_params: { type : Array , "default" : [] }
