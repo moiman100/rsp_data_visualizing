@@ -53,7 +53,7 @@ function SankeyGraph(props) {
   }, [sankey_data]);
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <Selectors
         version_changed={getVersionId}
         get_data={getData}

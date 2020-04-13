@@ -175,6 +175,7 @@ function Selectors(props) {
                     onClick={() =>
                       getData(checkState, selectedStartDate, selectedEndDate)
                     }
+                    size="small"
                   >
                     <Icon>sync</Icon>
                   </Fab>
@@ -194,6 +195,7 @@ function Selectors(props) {
                     }}
                     className={classes.fab}
                     onClick={() => props.remove_graph(props.index)}
+                    size="small"
                   >
                     <Icon>delete_forever</Icon>
                   </Fab>
