@@ -352,7 +352,6 @@ function prepareParams(req) {
 exports.funs = async (req, res, next) => {
   var events = [];
   const funnel = req.body.order;
-
   prepareParams(req);
 
   try {
@@ -447,7 +446,7 @@ exports.sankey = async (req, res, next) => {
 // Funnel in aggregation pipeline
 // @route   POST /api/funnelalt
 exports.funs_aggregate = async (req, res, next) => {
-
+  prepareParams(req);
   try {
     var events = [];
     const funnel = req.body.order;

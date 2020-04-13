@@ -78,6 +78,9 @@ function App(props) {
     if (name == "funnel") {
       return <FunnelGraph key={index} index={index} />;
     }
+    if (name == "funnel2") {
+      return <FunnelGraph2 key={index} index={index} />;
+    }
     if (name == "sankey") {
       return <SankeyGraph key={index} index={index} />;
     }
@@ -92,6 +95,13 @@ function App(props) {
         onClick={() => setGraph_list([...graph_list, "funnel"])}
       >
         Add funnel
+      </Button>
+      <Button
+        color="secondary"
+        startIcon={<Icon>add</Icon>}
+        onClick={() => setGraph_list([...graph_list, "funnel2"])}
+      >
+        Add mission funnel
       </Button>
       <Button
         color="secondary"
