@@ -81,22 +81,22 @@ function App(props) {
   function addGraph(name, index) {
     if (name == "funnel") {
       return (
-        <Grid item xs={6}>
-          <FunnelGraph key={index} index={index} remove_graph={removeGraph} />
+        <Grid key={index} item xs={6}>
+          <FunnelGraph index={index} remove_graph={removeGraph} />
         </Grid>
       );
     }
     if (name == "funnel2") {
       return (
-        <Grid item xs={6}>
-          <FunnelGraph2 key={index} index={index} remove_graph={removeGraph} />
+        <Grid key={index} item xs={6}>
+          <FunnelGraph2 index={index} remove_graph={removeGraph} />
         </Grid>
       );
     }
     if (name == "sankey") {
       return (
-        <Grid item xs={6}>
-          <SankeyGraph key={index} index={index} remove_graph={removeGraph} />
+        <Grid key={index} item xs={6}>
+          <SankeyGraph index={index} remove_graph={removeGraph} />
         </Grid>
       );
     }
