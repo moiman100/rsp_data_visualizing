@@ -159,7 +159,7 @@ function Selectors(props) {
               </NativeSelect>
             </FormControl>
             <Grid container>
-              <Grid item>
+              <Grid item xs={1}>
                 <Tooltip
                   disableFocusListener
                   disableTouchListener
@@ -175,6 +175,7 @@ function Selectors(props) {
                     onClick={() =>
                       getData(checkState, selectedStartDate, selectedEndDate)
                     }
+                    size="small"
                   >
                     <Icon>sync</Icon>
                   </Fab>

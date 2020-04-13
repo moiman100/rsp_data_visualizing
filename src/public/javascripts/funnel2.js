@@ -100,7 +100,7 @@ function FunnelGraph2(props) {
   }, [graph_data]);
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <Selectors
         version_changed={getEvents}
         get_data={getData}
