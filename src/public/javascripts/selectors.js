@@ -158,26 +158,47 @@ function Selectors(props) {
                 ))}
               </NativeSelect>
             </FormControl>
-            <Grid item xs={1}>
-              <Tooltip
-                disableFocusListener
-                disableTouchListener
-                title="Update graph"
-              >
-                <Fab
-                  style={{
-                    color: colors.common.white,
-                    backgroundColor: colors.blue[400],
-                    fontSize: 40,
-                  }}
-                  className={classes.fab}
-                  onClick={() =>
-                    getData(checkState, selectedStartDate, selectedEndDate)
-                  }
+            <Grid container>
+              <Grid item>
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Update graph"
                 >
-                  <Icon>sync</Icon>
-                </Fab>
-              </Tooltip>
+                  <Fab
+                    style={{
+                      color: colors.common.white,
+                      backgroundColor: colors.blue[400],
+                      fontSize: 40,
+                    }}
+                    className={classes.fab}
+                    onClick={() =>
+                      getData(checkState, selectedStartDate, selectedEndDate)
+                    }
+                  >
+                    <Icon>sync</Icon>
+                  </Fab>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Delete graph"
+                >
+                  <Fab
+                    style={{
+                      color: colors.common.white,
+                      backgroundColor: colors.red[400],
+                      fontSize: 40,
+                    }}
+                    className={classes.fab}
+                    onClick={() => props.remove_graph(props.index)}
+                  >
+                    <Icon>delete_forever</Icon>
+                  </Fab>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={6}>

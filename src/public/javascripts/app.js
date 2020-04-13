@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   fab: {
-    left: theme.spacing(2),
+    margin: theme.spacing(2),
   },
   link: {
     margin: theme.spacing(2),
@@ -70,20 +70,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
-  const [graph_list, setGraph_list] = useState([]);
+  const [graph_list, setGraph_list] = useState({});
+  const [unique_id, setUnique_id] = useState(0);
 
   const classes = useStyles();
 
   function addGraph(name, index) {
     if (name == "funnel") {
-      return <FunnelGraph key={index} index={index} />;
+      return (
+        <FunnelGraph key={index} index={index} remove_graph={removeGraph} />
+      );
     }
     if (name == "funnel2") {
-      return <FunnelGraph2 key={index} index={index} />;
+      return (
+        <FunnelGraph2 key={index} index={index} remove_graph={removeGraph} />
+      );
     }
     if (name == "sankey") {
-      return <SankeyGraph key={index} index={index} />;
+      return (
+        <SankeyGraph key={index} index={index} remove_graph={removeGraph} />
+      );
     }
+  }
+
+  function removeGraph(index) {
+    let graph_list_copy = { ...graph_list };
+    delete graph_list_copy[index];
+    setGraph_list(graph_list_copy);
+  }
+
+  function addListItem(type) {
+    setUnique_id(unique_id + 1);
+    setGraph_list({ ...graph_list, [unique_id]: type });
   }
 
   return (
@@ -92,25 +110,27 @@ function App(props) {
       <Button
         color="secondary"
         startIcon={<Icon>add</Icon>}
-        onClick={() => setGraph_list([...graph_list, "funnel"])}
+        onClick={() => addListItem("funnel")}
       >
         Add funnel
       </Button>
       <Button
         color="secondary"
         startIcon={<Icon>add</Icon>}
-        onClick={() => setGraph_list([...graph_list, "funnel2"])}
+        onClick={() => addListItem("funnel2")}
       >
         Add mission funnel
       </Button>
       <Button
         color="secondary"
         startIcon={<Icon>add</Icon>}
-        onClick={() => setGraph_list([...graph_list, "sankey"])}
+        onClick={() => addListItem("sankey")}
       >
         Add sankey
       </Button>
-      {graph_list.map((name, index) => addGraph(name, index))}
+      {Object.entries(graph_list).map((element) =>
+        addGraph(element[1], element[0])
+      )}
     </React.Fragment>
   );
 }

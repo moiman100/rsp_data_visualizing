@@ -88,10 +88,15 @@ function FunnelGraph2(props) {
   }
 
   useEffect(() => {
-    Plotly.react("funnel_graph2" + props.index, graph_data, {}, {
-      displayModeBar: false,
-      doubleClickDelay: 500,
-    });
+    Plotly.react(
+      "funnel_graph2" + props.index,
+      graph_data,
+      {},
+      {
+        displayModeBar: false,
+        doubleClickDelay: 500,
+      }
+    );
   }, [graph_data]);
 
   return (
@@ -99,7 +104,9 @@ function FunnelGraph2(props) {
       <Selectors
         version_changed={getEvents}
         get_data={getData}
-        version_selector_id="funnel_version_selector"
+        version_selector_id={"funnel2_version_selector" + props.index}
+        remove_graph={props.remove_graph}
+        index={props.index}
       />
 
       <CardContent id={"funnel_graph2" + props.index}></CardContent>
