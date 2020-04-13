@@ -57,7 +57,9 @@ function SankeyGraph(props) {
       <Selectors
         version_changed={getVersionId}
         get_data={getData}
-        version_selector_id="sankey_version_selector"
+        version_selector_id={"sankey_version_selector" + props.index}
+        remove_graph={props.remove_graph}
+        index={props.index}
       />
       <CardContent id={"sankey" + props.index}></CardContent>
     </Card>

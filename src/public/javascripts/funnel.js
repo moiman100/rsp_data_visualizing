@@ -116,7 +116,9 @@ function FunnelGraph(props) {
       <Selectors
         version_changed={getEvents}
         get_data={getData}
-        version_selector_id="funnel_version_selector"
+        version_selector_id={"funnel_version_selector" + props.index}
+        remove_graph={props.remove_graph}
+        index={props.index}
       />
 
       <CardContent id={"funnel_graph" + props.index}></CardContent>
