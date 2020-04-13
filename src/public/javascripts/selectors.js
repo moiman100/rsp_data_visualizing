@@ -159,7 +159,7 @@ function Selectors(props) {
               </NativeSelect>
             </FormControl>
             <Grid container>
-              <Grid item xs={1}>
+              <Grid item>
                 <Tooltip
                   disableFocusListener
                   disableTouchListener
@@ -195,6 +195,7 @@ function Selectors(props) {
                     }}
                     className={classes.fab}
                     onClick={() => props.remove_graph(props.index)}
+                    size="small"
                   >
                     <Icon>delete_forever</Icon>
                   </Fab>
