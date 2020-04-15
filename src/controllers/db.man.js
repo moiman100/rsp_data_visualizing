@@ -532,7 +532,7 @@ aggregate = async (funnel, sess_id) => {
   for (var i = 1; i < funnel.length; i++) {
     didA = didA + funnel[i];
     andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", ever] }); //check first more than null
-    andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", "$" + funnel[i - 1] + "first"] }); // funnel i+i last number more than previous first
+    andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", "$" + funnel[i - 1] + "first"] }); // funnel i+i first number more than previous first
     projectBool["$project"][didA] = { "$and": [] };
     andClause["$and"].forEach(function (a) { projectBool["$project"][didA]["$and"].push(a); });
   }
