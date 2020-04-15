@@ -494,29 +494,36 @@ function countings(funnel, events, index) {
 
 aggregate = async (funnel, sess_id) => {
 
-  var ever = 999; //for cheking if even occured
+  var ever = null; //for cheking if even occured
   var match = { "$match": { "session": { "$in": sess_id } } }; //match session ids
   var match2 = { "$match": { "event_name": { "$in": funnel } } } //match names
   var projectActions = { "$project": { "s": "$session" } }
 
   funnel.forEach(function (e) {
     projectActions["$project"][e] = {};
+    
     projectActions["$project"][e]["f"] = { "$cond": [{ "$eq": ["$event_name", e] }, "$event_number", ever] };
+    // if finds events name adds event num, else event num = null
     projectActions["$project"][e]["t"] = { "$cond": [{ "$eq": ["$event_name", e] }, 1, 0] };
+    //exist, or not
   });
 
   var groupBySession = { "$group": { "_id": "$s" } };
 
   funnel.forEach(function (e) {
     var first = e + "first";
+    var last = e + "last";
+    var all = e + "all";
     var times = e + "times";
-    groupBySession["$group"][first] = { "$min": "$" + e + ".f" };
-    groupBySession["$group"][times] = { "$sum": "$" + e + ".t" };
+    groupBySession["$group"][first] = { "$min": "$" + e + ".f" };//first occurance
+  // groupBySession["$group"][last] = { "$max": "$" + e + ".f" };//last occurance 
+  // groupBySession["$group"][all] = { "$push": "$" + e + ".f" };// all occurances
+  // groupBySession["$group"][times] = { "$sum": "$" + e + ".t" };//sum of occurances
   });
 
   var didA = funnel[0];
   var andClause = { "$and": [] };
-  var didFirst = { "$lt": ["$" + funnel[0] + "first", ever] };
+  var didFirst = { "$gt": ["$" + funnel[0] + "first", ever] }; // first greater than null
   andClause["$and"].push(didFirst);
 
   var projectBool = { "$project": { "_id": 0, "_id": "$_id" } };
@@ -524,8 +531,8 @@ aggregate = async (funnel, sess_id) => {
 
   for (var i = 1; i < funnel.length; i++) {
     didA = didA + funnel[i];
-    andClause["$and"].push({ "$lt": ["$" + funnel[i] + "first", ever] });
-    andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", "$" + funnel[i - 1] + "first"] });
+    andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", ever] }); //check first more than null
+    andClause["$and"].push({ "$gt": ["$" + funnel[i] + "first", "$" + funnel[i - 1] + "first"] }); // funnel i+i last number more than previous first
     projectBool["$project"][didA] = { "$and": [] };
     andClause["$and"].forEach(function (a) { projectBool["$project"][didA]["$and"].push(a); });
   }
@@ -535,7 +542,8 @@ aggregate = async (funnel, sess_id) => {
   for (var i = 0; i < funnel.length; i++) {
     didA = didA + funnel[i];
     groupAll["$group"][funnel[i]] = { "$sum": { "$cond": ["$" + didA, 1, 0] } };
-  }
+  };
+
 
   var t0 = new Date().getTime();
 
@@ -544,6 +552,7 @@ aggregate = async (funnel, sess_id) => {
   console.log("Funneling took " + (t1 - t0) + " milliseconds.");
   return event;
 };
+
 
 times = async () => {
   var lookup = { "$lookup": { from: "events", localField: "_id", foreignField: "session", as: "times" } };
